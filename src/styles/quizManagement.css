@@ -1,0 +1,36 @@
+/* src/styles/quizManagement.css */
+.quiz-item, .quiz-question {
+    border: 1px solid #ccc;
+    padding: 1em;
+    margin-bottom: 1em;
+  }
+  
+  .quiz-item h3, .quiz-question h4 {
+    margin-top: 0;
+  }
+  
+  .quiz-item ul, .quiz-question ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .quiz-item ul li, .quiz-question ul li {
+    margin-bottom: 0.5em;
+  }
+  
+  .form-container {
+    margin-top: 2em;
+  }
+  
+  .form-container h3 {
+    margin-top: 0;
+  }
+  
+  .form-container form div {
+    margin-bottom: 1em;
+  }
+  
+  button {
+    margin-right: 0.5em;
+  }
+  

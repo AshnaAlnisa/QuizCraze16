@@ -1,0 +1,16 @@
+/* src/styles/quizTimer.css */
+
+.quiz-timer {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+  
+  .timer {
+    font-size: 2rem;
+    color: #007bff;
+  }
+  
+  /* Add more styles as needed */
+  

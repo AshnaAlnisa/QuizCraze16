@@ -1,0 +1,46 @@
+/* src/styles/quizList.css */
+.quiz-list {
+    padding: 1em;
+  }
+  
+  .quiz-list h2 {
+    margin-top: 0;
+  }
+  
+  .quiz-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .quiz-list ul li {
+    border: 1px solid #ccc;
+    padding: 1em;
+    margin-bottom: 1em;
+  }
+  
+  .quiz-list ul li h3 {
+    margin-top: 0;
+  }
+  
+  .quiz-list ul li button {
+    margin-top: 0.5em;
+  }
+  
+  .quiz-details ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .quiz-details ul li {
+    margin-bottom: 1em;
+    cursor: pointer;
+  }
+  
+  .quiz-details ul li.selected-option {
+    background-color: lightgreen;
+  }
+  
+  .quiz-details button {
+    margin-top: 1em;
+  }
+  

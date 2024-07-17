@@ -1,0 +1,40 @@
+/* src/styles/userManagement.css */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  table, th, td {
+    border: 1px solid black;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+  }
+  
+  button {
+    margin-right: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .edit-form {
+    margin-top: 20px;
+  }
+  
+  .edit-form form div {
+    margin-bottom: 10px;
+  }
+  
+  .edit-form label {
+    display: inline-block;
+    width: 100px;
+  }
+  
