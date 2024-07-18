@@ -1,54 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../styles/editProfile.css';
+import { useNavigate } from 'react-router-dom';
 
 const EditProfile = () => {
+  const navigate = useNavigate();
+  
   const [user, setUser] = useState({
     id: '',
     username: '',
     name: '',
     email: '',
     address: '',
-    picture: null // Assuming picture is stored as a file object
+    picture: null
   });
 
-  const [editing, setEditing] = useState(false); // State to toggle editing mode
-  const [fileInput, setFileInput] = useState(null); // State to manage file input
+  const [formEditable, setFormEditable] = useState(false); // State to toggle form editing
 
   useEffect(() => {
     fetchUserData();
   }, []);
 
-  const [loading, setLoading] = useState(false);
+  const fetchUserData = async () => {
+    try {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      const userEmail = currentUser?.email;
 
-const fetchUserData = async () => {
-  setLoading(true);
-  try {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    const userEmail = currentUser?.email;
+      const response = await axios.post('http://localhost:5164/viewUsers', {
+        eventID: "1001",
+        addInfo: { email: userEmail }
+      });
 
-    const response = await axios.post('http://localhost:5164/viewUsers', {
-      eventID: "1001",
-      addInfo: { email: userEmail }
-    });
+      const userData = response.data.rData?.items || [];
+      const foundUser = userData.find(user => user.email === userEmail);
 
-    const userData = response.data.rData?.items || [];
-    
-    const foundUser = userData.find(user => user.email === userEmail);
-    
-    if (foundUser) {
-      setUser(foundUser);
-
-    } else {
-      console.error('User data does not match logged-in user');
+      if (foundUser) {
+        setUser(foundUser);
+      } else {
+        console.error('User data does not match logged-in user');
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
     }
-  } catch (error) {
-    console.error('Error fetching user data:', error);
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,77 +51,73 @@ const fetchUserData = async () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-  
+
     if (file) {
       const reader = new FileReader();
-  
       reader.onloadend = () => {
-        setFileInput(reader.result); // Store the Base64 string
+        const base64String = reader.result?.replace(/^data:image\/[a-z]+;base64,/, '');
+        setUser({ ...user, picture: base64String });
       };
-  
-      reader.readAsDataURL(file); // Convert the file to Base64
+      reader.readAsDataURL(file);
     }
   };
-  
 
   const handleEdit = () => {
-    setEditing(true);
+    setFormEditable(true);
   };
 
   const handleUpdate = async () => {
     try {
-      const formData = new FormData();
-      formData.append('eventID', "1001"); // Include eventID
-      formData.append('id', user.id);
-      formData.append('username', user.username);
-      formData.append('name', user.name);
-      formData.append('email', user.email);
-      formData.append('address', user.address);
-      
-      if (fileInput) {
-        formData.append('picture', fileInput);
-      }
-  
-      const response = await axios.post('http://localhost:5164/updateUser', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      const updatedUserData = {
+        eventID: "1001",
+        addInfo: {
+          id: user.id,
+          username: user.username,
+          name: user.name,
+          email: user.email,
+          address: user.address,
+          picture: user.picture
         }
-      });
-  
-      console.log('Update Response:', response.data);
-      setEditing(false);
-      
-      // Optionally fetch updated user data to reflect changes
-      fetchUserData();
+      };
+
+      const response = await axios.post('http://localhost:5164/updateUser', updatedUserData);
+
+      if (response.status === 200) {
+        setFormEditable(false); // Set form to non-editable after successful update
+        alert('Profile updated successfully');
+      } else {
+        alert('Failed to update profile');
+      }
     } catch (error) {
       console.error('Error updating user data:', error);
+      alert('An error occurred while updating the profile');
     }
   };
-  
+
   return (
     <div className="edit-profile">
       <h2>Edit Profile</h2>
       <div className="profile-picture">
-        <img src={user.picture} alt="Profile image" />
+        <img src={`data:image/png;base64, ${user.picture}`} alt="Profile Image" />
         <input type="file" accept="image/*" onChange={handleFileChange} />
       </div>
       <div className="profile-details">
         <label>Username:</label>
-        <input type="text" name="username" value={user.username} readOnly={!editing} onChange={handleChange} />
+        <input type="text" name="username" value={user.username} readOnly={!formEditable} onChange={handleChange} />
         <label>Name:</label>
-        <input type="text" name="name" value={user.name} readOnly={!editing} onChange={handleChange} />
+        <input type="text" name="name" value={user.name} readOnly={!formEditable} onChange={handleChange} />
         <label>Email:</label>
-        <input type="email" name="email" value={user.email} readOnly={!editing} onChange={handleChange} />
+        <input type="email" name="email" value={user.email} readOnly={!formEditable} onChange={handleChange} />
         <label>Address:</label>
-        <textarea name="address" value={user.address} readOnly={!editing} onChange={handleChange} />
+        <textarea name="address" value={user.address} readOnly={!formEditable} onChange={handleChange} />
       </div>
       <div className="profile-actions">
-        {!editing ? (
+        {!formEditable ? (
           <button onClick={handleEdit}>Edit</button>
         ) : (
           <>
             <button onClick={handleUpdate}>Update</button>
-            <button onClick={() => setEditing(false)}>Cancel</button>
+            <button onClick={() => setFormEditable(false)}>Cancel</button>
           </>
         )}
       </div>

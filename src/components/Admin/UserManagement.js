@@ -85,7 +85,7 @@ const UserManagement = () => {
               <td>{user.email}</td>
               <td>{user.address}</td>
               <td>
-                <img src={user.picture} alt={`${user.username}'s profile`} width="50" />
+              <img src={`data:image/png;base64, ${user.picture}`} alt="Profile Image" width={60} />
               </td>
               <td>
                 {confirmDelete === index ? (
