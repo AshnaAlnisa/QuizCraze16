@@ -1,68 +1,96 @@
-// src/pages/UserDashboardPage.js
-
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import ChangePassword from '../Auth/ChangePassword'; // Path to ChangePassword component
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ChangePassword from '../Auth/ChangePassword';
 import Leaderboard from '../Dashboard/Leaderboard';
 import MyResults from '../Dashboard/MyResults';
 import EditProfile from '../Dashboard/EditProfile';
 import ContactUs from '../Dashboard/ContactUs';
 import QuizList from '../Quiz/QuizList';
-import '../../styles/styles.css';
 import axios from 'axios';
 
-// Assume you have quiz data
 const quizzes = [
   { id: 1, title: 'Quiz 1', description: 'Description for Quiz 1' },
   { id: 2, title: 'Quiz 2', description: 'Description for Quiz 2' },
-  { id: 3, title: 'Quiz 3', description: 'Description for Quiz 3' },
-  // Add more quizzes as needed
+  { id: 3, title: 'Quiz 3', description: 'Description for Quiz 3' }
 ];
 
 const UserDashboardPage = () => {
-  const [activeSection, setActiveSection] = useState(null); // Default active section
+  const [activeSection, setActiveSection] = useState(null);
+  const [user, setUser] = useState({
+    id: '',
+    username: '',
+    name: '',
+    email: '',
+    address: '',
+    picture: null
+  });
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      const userEmail = currentUser?.email;
+
+      const response = await axios.post('http://localhost:5164/viewUsers', {
+        eventID: "1001",
+        addInfo: { email: userEmail }
+      });
+
+      const userData = response.data.rData?.items || [];
+      const foundUser = userData.find(user => user.email === userEmail);
+
+      if (foundUser) {
+        setUser(foundUser);
+      } else {
+        console.error('User data does not match logged-in user');
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
 
   const renderContent = () => {
     switch (activeSection) {
       case 'changePassword':
-        return <ChangePassword />; // Render ChangePassword component
+        return <ChangePassword />;
       case 'leaderboard':
-        return <Leaderboard />; // Example placeholder
+        return <Leaderboard />;
       case 'myResults':
-        return <MyResults />; // Example placeholder
+        return <MyResults />;
       case 'editProfile':
         return <EditProfile />;
       case 'ContactUs':
         return <ContactUs />;
       case 'allQuizzes':
         return <QuizList quizzes={quizzes} />;
-      // Add cases for other features as needed
       default:
         return null;
     }
   };
 
   const handleNavigation = (section) => {
-    setActiveSection(section); // Set the active section
+    setActiveSection(section);
   };
 
-const navigate = useNavigate();
   const handleLogout = async () => {
     try {
       const token = JSON.parse(localStorage.getItem('currentUser')).token;
 
-      // Make API call to logout endpoint
       const response = await axios.post('http://localhost:5164/logout', {
-        eventID: '1001', // Assuming eventID is required by your API
+        eventID: '1001',
         addInfo: {
           TOKEN: token,
         },
       });
 
-      // Assuming API response indicates successful logout
       if (response.data.rData.rMessage === 'Logout successful') {
-        localStorage.removeItem('currentUser'); // Clear token from localStorage
-        navigate('/login'); // Redirect to login page after logout
+        localStorage.removeItem('currentUser');
+        navigate('/login');
       } else {
         alert('Logout failed. Please try again.');
       }
@@ -71,6 +99,18 @@ const navigate = useNavigate();
       alert('An error occurred. Please try again.');
     }
   };
+
+  let curDate = new Date();
+  curDate = curDate.getHours(); 
+  let greeting = "";
+  if(curDate >= 1 && curDate <12){
+    greeting = "Good Morning !";
+  }else if(curDate >= 12 && curDate < 16)
+  {
+    greeting = "Good Afternoon!";
+  }else{
+    greeting = "Good Evening!"
+  }
 
   return (
     <div className="container">
@@ -85,13 +125,13 @@ const navigate = useNavigate();
               <li><button onClick={() => handleNavigation('changePassword')}>Change Password</button></li>
               <li><button onClick={() => handleNavigation('editProfile')}>Edit Profile</button></li>
               <li><button onClick={() => handleNavigation('ContactUs')}>Contact Us</button></li>
-              
-              {/* Add more navigation items as necessary */}
               <li><button onClick={handleLogout}>Logout</button></li>
             </ul>
           </div>
         </div>
         <div className="right-content">
+          <h1>Hello {user.name}, {greeting}</h1>
+
           {renderContent()}
         </div>
       </div>
@@ -100,5 +140,3 @@ const navigate = useNavigate();
 };
 
 export default UserDashboardPage;
-
-
