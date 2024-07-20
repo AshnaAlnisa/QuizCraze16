@@ -17,7 +17,7 @@ const quizzes = [
 const UserDashboardPage = () => {
   const [activeSection, setActiveSection] = useState(null);
   const [user, setUser] = useState({
-    id: '',
+    user_id: '',
     username: '',
     name: '',
     email: '',

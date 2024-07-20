@@ -7,7 +7,7 @@ const EditProfile = () => {
   const navigate = useNavigate();
   
   const [user, setUser] = useState({
-    id: '',
+    user_id: '',
     username: '',
     name: '',
     email: '',
@@ -71,7 +71,7 @@ const EditProfile = () => {
       const updatedUserData = {
         eventID: "1001",
         addInfo: {
-          id: user.id,
+          user_id: user.user_id,
           username: user.username,
           name: user.name,
           email: user.email,

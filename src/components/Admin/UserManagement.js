@@ -27,12 +27,12 @@ const UserManagement = () => {
     fetchUsers1();
   }, []);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (user_id) => {
     try {
       const response = await axios.post('http://localhost:5164/deleteUsers', {
         eventID: "1001",
         addInfo: {
-          id: id
+          user_id: user_id
         }
       });
 
@@ -41,8 +41,8 @@ const UserManagement = () => {
       if (response.status === 200) {
         const responseData = response.data;
         if (responseData.rData.rMessage === "DELETE SUCCESSFULLY.") {
-          setUsers(users.filter(user => user.id !== id)); // Remove user from local state
-          console.log(`User with ID ${id} deleted successfully`);
+          setUsers(users.filter(user => user.user_id !== user_id)); // Remove user from local state
+          console.log(`User with ID ${user_id} deleted successfully`);
         } else {
           console.log("Failed to delete user");
         }
@@ -54,7 +54,7 @@ const UserManagement = () => {
 
   const handleConfirmDelete = () => {
     if (confirmDelete !== null) {
-      handleDelete(users[confirmDelete].id);
+      handleDelete(users[confirmDelete].user_id);
       setConfirmDelete(null); // Reset confirmation state
     }
   };
@@ -79,7 +79,7 @@ const UserManagement = () => {
         </thead>
         <tbody>
           {users.map((user, index) => (
-            <tr key={user.id}>
+            <tr key={user.user_id}>
               <td>{user.name}</td>
               <td>{user.username}</td>
               <td>{user.email}</td>
