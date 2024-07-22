@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Import Axios
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import '../../styles/quizList.css';
 import Modal from './Modal.js';
 
@@ -7,18 +7,18 @@ const QuizList = () => {
   const [quizzes, setQuizzes] = useState([]);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState({});
-  const [timer, setTimer] = useState(null);
+  const [timer, setTimer] = useState(5); // 120 seconds = 2 minutes
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [incorrectAnswers, setIncorrectAnswers] = useState(0);
+  const timerRef = useRef(null); // Reference to the timer
 
   useEffect(() => {
-    // Fetch all quiz cards when component mounts
     const fetchQuizCards = async () => {
       try {
-        const response = await axios.post('http://localhost:5164/viewCardQuiz', { eventID: "1001" }); // Axios GET request
+        const response = await axios.post('http://localhost:5164/viewCardQuiz', { eventID: "1001" });
         const data = response.data;
         if (data && data.rData && data.rData.items) {
           setQuizzes(data.rData.items);
@@ -31,13 +31,31 @@ const QuizList = () => {
     fetchQuizCards();
   }, []);
 
+  const startTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    setTimer(5);
+    timerRef.current = setInterval(() => {
+      setTimer(prev => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          handleSubmitQuiz();
+          // setShowModal(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
   const handleStartQuiz = async (quizCardId) => {
     try {
       const response = await axios.post(`http://localhost:5164/viewQuizByQuizCardId`, {
         eventID: "1001",
-        addInfo: { quiz_card_id: quizCardId } // Corrected to quiz_card_id
+        addInfo: { quiz_card_id: quizCardId }
       });
-  
+
       const data = response.data;
       if (data && data.rData && data.rData.items) {
         setSelectedQuiz({
@@ -45,18 +63,17 @@ const QuizList = () => {
           quizzes: data.rData.items
         });
         setSelectedOptions({});
-        setTimer(0); // Reset timer when starting a new quiz
         setIsSubmitted(false); // Reset submission state
         setScore(0); // Reset score
         setShowModal(false); // Hide modal if open
         setCorrectAnswers(0);
         setIncorrectAnswers(0);
+        startTimer(); // Start the timer when starting a new quiz
       }
     } catch (error) {
       console.error('Error fetching quizzes:', error);
     }
   };
-  
 
   const handleOptionSelect = (questionId, option) => {
     setSelectedOptions({
@@ -67,7 +84,9 @@ const QuizList = () => {
   };
 
   const handleSubmitQuiz = () => {
+    console.log('selectedQuiz:::',selectedQuiz)
     if (selectedQuiz) {
+      console.log('selectedQuiz:::',selectedQuiz)
       let newScore = 0;
       let correctCount = 0;
       let incorrectCount = 0;
@@ -84,6 +103,7 @@ const QuizList = () => {
       setIncorrectAnswers(incorrectCount);
       setIsSubmitted(true);
       setShowModal(true); // Show modal when quiz is submitted
+      clearInterval(timerRef.current); // Stop the timer
     }
   };
 
@@ -95,6 +115,7 @@ const QuizList = () => {
     address: '',
     picture: null
   });
+
   useEffect(() => {
     fetchUserData();
   }, []);
@@ -126,7 +147,7 @@ const QuizList = () => {
     <div className="quiz-details">
       <h3>{quizCard.title}</h3>
       <p>{quizCard.no_of_questions}</p>
-      <div className="timer">Timer: {timer} seconds</div>
+      <div className="timer">Timer: {Math.floor(timer / 60)}:{timer % 60 < 10 ? `0${timer % 60}` : timer % 60} minutes</div>
       <ul>
         {quizCard.quizzes.map(q => (
           <li key={q.quiz_id}>
@@ -158,8 +179,10 @@ const QuizList = () => {
         ))}
       </ul>
       <button onClick={handleSubmitQuiz}>Submit</button>
-      <button onClick={() => setSelectedQuiz(null)}>Back to Quizzes</button>
-      
+      <button onClick={() => {
+        clearInterval(timerRef.current); // Stop the timer when going back
+        setSelectedQuiz(null);
+      }}>Back to Quizzes</button>
     </div>
   );
 
@@ -179,16 +202,17 @@ const QuizList = () => {
       ) : (
         renderQuizQuestions(selectedQuiz)
       )}
+  
       <Modal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         correctAnswers={correctAnswers}
         incorrectAnswers={incorrectAnswers}
         score={score}
-        userId={user.user_id}           
-        quizCardId={selectedQuiz ? selectedQuiz.id : null} 
+        userId={user.user_id}
+        quizCardId={selectedQuiz ? selectedQuiz.id : null}
+        handleSubmit={handleSubmitQuiz}
       />
-      
     </div>
   );
 };

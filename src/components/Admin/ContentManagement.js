@@ -6,14 +6,17 @@ const ContentManagement = () => {
   const [quizCards, setQuizCards] = useState([]);
   const [newQuizCardTitle, setNewQuizCardTitle] = useState('');
   const [newQuizCardNoOfQuestions, setNewQuizCardNoOfQuestions] = useState('');
-
-  const [questions, setQuestions] = useState([]);
-  const [newQuestion, setNewQuestion] = useState('');
-  const [newOption1, setNewOption1] = useState('');
-  const [newOption2, setNewOption2] = useState('');
-  const [newOption3, setNewOption3] = useState('');
-  const [newOption4, setNewOption4] = useState('');
-  const [newCorrectAnswer, setNewCorrectAnswer] = useState('');
+  
+  const [questionSections, setQuestionSections] = useState([
+    {
+      question: '',
+      option1: '',
+      option2: '',
+      option3: '',
+      option4: '',
+      correctAnswer: '',
+    }
+  ]);
 
   useEffect(() => {
     fetchQuizCards();
@@ -50,13 +53,18 @@ const ContentManagement = () => {
 
         // Then add questions
         const quiz_card_id = quizCardData.rData.quiz_card_id;
-        for (let i = 0; i < questions.length; i++) {
-          const questionData = questions[i];
+        for (let i = 0; i < questionSections.length; i++) {
+          const questionData = questionSections[i];
           const addQuizResponse = await axios.post('http://localhost:5164/insertQuiz', {
             eventID: "1001",
             addInfo: {
               quiz_card_id: quiz_card_id,
-              ...questionData
+              question: questionData.question,
+              option1: questionData.option1,
+              option2: questionData.option2,
+              option3: questionData.option3,
+              option4: questionData.option4,
+              correct_answer: questionData.correctAnswer
             }
           });
 
@@ -76,13 +84,14 @@ const ContentManagement = () => {
         // Clear input fields
         setNewQuizCardTitle('');
         setNewQuizCardNoOfQuestions('');
-        setQuestions([]);
-        setNewQuestion('');
-        setNewOption1('');
-        setNewOption2('');
-        setNewOption3('');
-        setNewOption4('');
-        setNewCorrectAnswer('');
+        setQuestionSections([{
+          question: '',
+          option1: '',
+          option2: '',
+          option3: '',
+          option4: '',
+          correctAnswer: '',
+        }]);
       } else {
         console.log("Failed to add quiz card:", quizCardData);
       }
@@ -91,23 +100,29 @@ const ContentManagement = () => {
     }
   };
 
-  const handleAddQuestion = () => {
-    const newQuestionData = {
-      question: newQuestion,
-      option1: newOption1,
-      option2: newOption2,
-      option3: newOption3,
-      option4: newOption4,
-      correct_answer: newCorrectAnswer
-    };
-    setQuestions([...questions, newQuestionData]);
-    // Clear input fields after adding question
-    setNewQuestion('');
-    setNewOption1('');
-    setNewOption2('');
-    setNewOption3('');
-    setNewOption4('');
-    setNewCorrectAnswer('');
+  const handleQuestionChange = (index, event) => {
+    const { name, value } = event.target;
+    const newQuestionSections = [...questionSections];
+    newQuestionSections[index] = { ...newQuestionSections[index], [name]: value };
+    setQuestionSections(newQuestionSections);
+  };
+
+  const handleAddMoreQuestions = () => {
+    setQuestionSections([...questionSections, {
+      question: '',
+      option1: '',
+      option2: '',
+      option3: '',
+      option4: '',
+      correctAnswer: '',
+    }]);
+  };
+
+  const handleDeleteQuestion = (index) => {
+    if (questionSections.length > 1) {
+      const newQuestionSections = questionSections.filter((_, i) => i !== index);
+      setQuestionSections(newQuestionSections);
+    }
   };
 
   return (
@@ -128,43 +143,57 @@ const ContentManagement = () => {
           onChange={(e) => setNewQuizCardNoOfQuestions(e.target.value)}
           placeholder="Number of Questions"
         />
-        <input
-          type="text"
-          value={newQuestion}
-          onChange={(e) => setNewQuestion(e.target.value)}
-          placeholder="Question"
-        />
-        <input
-          type="text"
-          value={newOption1}
-          onChange={(e) => setNewOption1(e.target.value)}
-          placeholder="Option 1"
-        />
-        <input
-          type="text"
-          value={newOption2}
-          onChange={(e) => setNewOption2(e.target.value)}
-          placeholder="Option 2"
-        />
-        <input
-          type="text"
-          value={newOption3}
-          onChange={(e) => setNewOption3(e.target.value)}
-          placeholder="Option 3"
-        />
-        <input
-          type="text"
-          value={newOption4}
-          onChange={(e) => setNewOption4(e.target.value)}
-          placeholder="Option 4"
-        />
-        <input
-          type="text"
-          value={newCorrectAnswer}
-          onChange={(e) => setNewCorrectAnswer(e.target.value)}
-          placeholder="Correct Answer"
-        />
-        <button onClick={handleAddQuestion}>Add Question</button>
+        {questionSections.map((section, index) => (
+          <div key={index} className="question-section">
+            <h4>Question {index + 1}</h4>
+            <input
+              type="text"
+              name="question"
+              value={section.question}
+              onChange={(e) => handleQuestionChange(index, e)}
+              placeholder="Question"
+            />
+            <input
+              type="text"
+              name="option1"
+              value={section.option1}
+              onChange={(e) => handleQuestionChange(index, e)}
+              placeholder="Option 1"
+            />
+            <input
+              type="text"
+              name="option2"
+              value={section.option2}
+              onChange={(e) => handleQuestionChange(index, e)}
+              placeholder="Option 2"
+            />
+            <input
+              type="text"
+              name="option3"
+              value={section.option3}
+              onChange={(e) => handleQuestionChange(index, e)}
+              placeholder="Option 3"
+            />
+            <input
+              type="text"
+              name="option4"
+              value={section.option4}
+              onChange={(e) => handleQuestionChange(index, e)}
+              placeholder="Option 4"
+            />
+            <input
+              type="text"
+              name="correctAnswer"
+              value={section.correctAnswer}
+              onChange={(e) => handleQuestionChange(index, e)}
+              placeholder="Correct Answer"
+            />
+            {questionSections.length > 1 && (
+              <button onClick={() => handleDeleteQuestion(index)}>Delete Question</button>
+            )}
+          </div>
+        ))}
+        <button onClick={handleAddMoreQuestions}>Add More Questions</button>
         <button onClick={handleAddQuizAndCard}>Add Quiz and Quiz Card</button>
       </section>
 
@@ -174,17 +203,6 @@ const ContentManagement = () => {
           {quizCards.map((quizCard, index) => (
             <li key={index}>
               {quizCard.title} - {quizCard.no_of_questions} Questions
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section>
-        <h3>Current Questions</h3>
-        <ul>
-          {questions.map((question, index) => (
-            <li key={index}>
-              Question: {question.question}
             </li>
           ))}
         </ul>
