@@ -1,195 +1,194 @@
-// src/components/Admin/QuizManagement.js
-
 import React, { useState, useEffect } from 'react';
-import QuizItem from '../Quiz/QuizItem';
+import axios from 'axios';
 import '../../styles/quizManagement.css';
 
 const QuizManagement = () => {
-  const [quizzes, setQuizzes] = useState([]);
-  const [selectedQuiz, setSelectedQuiz] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [quizData, setQuizData] = useState({ title: '', description: '', questions: [] });
-  const [questionData, setQuestionData] = useState({ text: '', options: '' });
+  const [quizCards, setQuizCards] = useState([]);
+  const [selectedQuizCard, setSelectedQuizCard] = useState(null);
+  const [quizCardTitle, setQuizCardTitle] = useState('');
+  const [quizCardNoOfQuestions, setQuizCardNoOfQuestions] = useState('');
 
   useEffect(() => {
-    // Mock data fetching function (replace with actual API call)
-    const fetchQuizzes = async () => {
-      const mockQuizzes = [
-        {
-          id: 1,
-          title: 'Quiz 1',
-          description: 'Description of Quiz 1',
-          questions: [
-            {
-              text: 'What is 2 + 2?',
-              options: [
-                { text: '3' },
-                { text: '4' },
-                { text: '5' },
-              ],
-            },
-          ],
-        },
-      ];
-      setQuizzes(mockQuizzes);
-    };
-
-    fetchQuizzes();
+    fetchQuizCards();
   }, []);
 
-  const handleEditQuiz = (quiz) => {
-    setSelectedQuiz(quiz);
-    setQuizData({ title: quiz.title, description: quiz.description, questions: quiz.questions });
-    setIsEditing(true);
-  };
-
-  const handleDeleteQuiz = (quizId) => {
-    setQuizzes(quizzes.filter(quiz => quiz.id !== quizId));
-  };
-
-  const handleSaveChanges = (e) => {
-    e.preventDefault();
-    const updatedQuizzes = quizzes.map(quiz =>
-      quiz.id === selectedQuiz.id ? { ...quiz, ...quizData } : quiz
-    );
-    setQuizzes(updatedQuizzes);
-    setIsEditing(false);
-    setSelectedQuiz(null);
-    setQuizData({ title: '', description: '', questions: [] });
-  };
-
-  const handleCreateQuiz = (e) => {
-    e.preventDefault();
-    const newQuiz = {
-      id: quizzes.length + 1,
-      title: quizData.title,
-      description: quizData.description,
-      questions: quizData.questions,
-    };
-    setQuizzes([...quizzes, newQuiz]);
-    setQuizData({ title: '', description: '', questions: [] });
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setQuizData({ ...quizData, [name]: value });
-  };
-
-  const handleQuestionChange = (e) => {
-    const { name, value } = e.target;
-    setQuestionData({ ...questionData, [name]: value });
-  };
-
-  const handleAddQuestion = (e) => {
-    e.preventDefault();
-    const newQuestion = {
-      text: questionData.text,
-      options: questionData.options.split(',').map(option => ({ text: option.trim() })),
-    };
-    setQuizData({ ...quizData, questions: [...quizData.questions, newQuestion] });
-    setQuestionData({ text: '', options: '' });
-  };
-
-  const handleEditQuestion = (quizId, questionIndex) => {
-    const quiz = quizzes.find(q => q.id === quizId);
-    const question = quiz.questions[questionIndex];
-    const updatedQuestionText = prompt('Edit question text:', question.text);
-    if (updatedQuestionText !== null) {
-      quiz.questions[questionIndex].text = updatedQuestionText;
-      setQuizzes([...quizzes]);
+  const fetchQuizCards = async () => {
+    try {
+      const response = await axios.post('http://localhost:5164/viewCardQuiz', { eventID: "1001" });
+      const data = response.data;
+      if (data && data.rData && data.rData.items) {
+        setQuizCards(data.rData.items);
+      }
+    } catch (error) {
+      console.error('Error fetching quiz cards:', error);
     }
   };
 
-  const handleDeleteQuestion = (quizId, questionIndex) => {
-    const quiz = quizzes.find(q => q.id === quizId);
-    quiz.questions.splice(questionIndex, 1);
-    setQuizzes([...quizzes]);
-  };
-
-  const handleEditOption = (quizId, questionIndex, optionIndex) => {
-    const quiz = quizzes.find(q => q.id === quizId);
-    const question = quiz.questions[questionIndex];
-    const option = question.options[optionIndex];
-    const updatedOptionText = prompt('Edit option text:', option.text);
-    if (updatedOptionText !== null) {
-      quiz.questions[questionIndex].options[optionIndex].text = updatedOptionText;
-      setQuizzes([...quizzes]);
+  const handleDeleteQuizCard = async (quizCardId) => {
+    try {
+      const confirmDelete = window.confirm('Are you sure you want to delete this quiz card?');
+      if (confirmDelete) {
+        const response = await axios.post('http://localhost:5164/deleteCardQuiz', {
+          eventID: "1001",
+          addInfo: { quiz_card_id: quizCardId }
+        });
+        const data = response.data;
+        if (data && data.rMessage === "Successful") {
+          setQuizCards(quizCards.filter(card => card.quiz_card_id !== quizCardId));
+          setSelectedQuizCard(null); // Clear selected quiz card after deletion
+        } else {
+          console.error('Failed to delete quiz card:', data);
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting quiz card:', error);
     }
   };
 
-  const handleDeleteOption = (quizId, questionIndex, optionIndex) => {
-    const quiz = quizzes.find(q => q.id === quizId);
-    quiz.questions[questionIndex].options.splice(optionIndex, 1);
-    setQuizzes([...quizzes]);
+  const handleEditQuizCard = async (quizCardId) => {
+    try {
+      const response = await axios.post('http://localhost:5164/viewQuizByQuizCardId', {
+        eventID: "1001",
+        addInfo: { quiz_card_id: quizCardId }
+      });
+      const data = response.data;
+      if (data && data.rData && data.rData.items) {
+        setSelectedQuizCard({
+          id: quizCardId,
+          quizzes: data.rData.items
+        });
+        // Populate quiz card title and number of questions for editing
+        const selectedCard = quizCards.find(card => card.quiz_card_id === quizCardId);
+        if (selectedCard) {
+          setQuizCardTitle(selectedCard.title);
+          setQuizCardNoOfQuestions(selectedCard.no_of_questions);
+        }
+      } else {
+        console.error('Failed to fetch quiz card details for editing');
+      }
+    } catch (error) {
+      console.error('Error editing quiz card:', error);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setSelectedQuizCard(null);
+    setQuizCardTitle('');
+    setQuizCardNoOfQuestions('');
+  };
+
+  const handleSaveChanges = async () => {
+    try {
+      const response = await axios.post('http://localhost:5164/updateCardQuiz', {
+        eventID: "1001",
+        addInfo: {
+          quiz_card_id: selectedQuizCard.id,
+          title: quizCardTitle,
+          no_of_questions: quizCardNoOfQuestions
+        }
+      });
+      const data = response.data;
+      if (data && data.rMessage === "Successful") {
+        // Update quiz card in state
+        setQuizCards(quizCards.map(card => {
+          if (card.quiz_card_id === selectedQuizCard.id) {
+            return {
+              ...card,
+              title: quizCardTitle,
+              no_of_questions: quizCardNoOfQuestions
+            };
+          }
+          return card;
+        }));
+        setSelectedQuizCard(null);
+        setQuizCardTitle('');
+        setQuizCardNoOfQuestions('');
+      } else {
+        console.error('Failed to update quiz card:', data);
+      }
+    } catch (error) {
+      console.error('Error updating quiz card:', error);
+    }
+  };
+
+  const handleOptionChange = (quizId, option) => {
+    setSelectedQuizCard({
+      ...selectedQuizCard,
+      quizzes: selectedQuizCard.quizzes.map(quiz => {
+        if (quiz.quiz_id === quizId) {
+          return {
+            ...quiz,
+            [option.type]: option.value
+          };
+        }
+        return quiz;
+      })
+    });
   };
 
   return (
-    <div>
+    <div className="quiz-management">
       <h2>Quiz Management</h2>
-      {quizzes.map(quiz => (
-        <QuizItem
-          key={quiz.id}
-          quiz={quiz}
-          onEditQuiz={handleEditQuiz}
-          onDeleteQuiz={handleDeleteQuiz}
-          onEditQuestion={handleEditQuestion}
-          onDeleteQuestion={handleDeleteQuestion}
-          onEditOption={handleEditOption}
-          onDeleteOption={handleDeleteOption}
-        />
-      ))}
-
-      <div className="form-container">
-        <h3>{isEditing ? 'Edit Quiz' : 'Create Quiz'}</h3>
-        <form onSubmit={isEditing ? handleSaveChanges : handleCreateQuiz}>
-          <div>
-            <label>Title:</label>
-            <input
-              type="text"
-              name="title"
-              value={quizData.title}
-              onChange={handleChange}
-              required
-            />
+      <div className="quiz-cards">
+        {quizCards.map(quizCard => (
+          <div key={quizCard.quiz_card_id} className="quiz-card">
+            <h3>{quizCard.title}</h3>
+            <p>Total Questions: {quizCard.no_of_questions}</p>
+            <div className="card-actions">
+              <button onClick={() => handleEditQuizCard(quizCard.quiz_card_id)}>Edit</button>
+              <button onClick={() => handleDeleteQuizCard(quizCard.quiz_card_id)}>Delete</button>
+            </div>
+            {selectedQuizCard && selectedQuizCard.id === quizCard.quiz_card_id && (
+              <div className="edit-quiz-card">
+                <input
+                  type="text"
+                  value={quizCardTitle}
+                  onChange={(e) => setQuizCardTitle(e.target.value)}
+                  placeholder="Quiz Card Title"
+                />
+                <input
+                  type="number"
+                  value={quizCardNoOfQuestions}
+                  onChange={(e) => setQuizCardNoOfQuestions(e.target.value)}
+                  placeholder="Number of Questions"
+                />
+                <button onClick={handleSaveChanges}>Save Changes</button>
+                <button onClick={handleCancelEdit}>Cancel</button>
+                <h4>Edit Questions:</h4>
+                {selectedQuizCard.quizzes.map(quiz => (
+                  <div key={quiz.quiz_id} className="edit-question">
+                    <p>Question: {quiz.question}</p>
+                    <input
+                      type="text"
+                      value={quiz.option1}
+                      onChange={(e) => handleOptionChange(quiz.quiz_id, { type: 'option1', value: e.target.value })}
+                    />
+                    <input
+                      type="text"
+                      value={quiz.option2}
+                      onChange={(e) => handleOptionChange(quiz.quiz_id, { type: 'option2', value: e.target.value })}
+                    />
+                    <input
+                      type="text"
+                      value={quiz.option3}
+                      onChange={(e) => handleOptionChange(quiz.quiz_id, { type: 'option3', value: e.target.value })}
+                    />
+                    <input
+                      type="text"
+                      value={quiz.option4}
+                      onChange={(e) => handleOptionChange(quiz.quiz_id, { type: 'option4', value: e.target.value })}
+                    />
+                    <input
+                      type="text"
+                      value={quiz.correct_answer}
+                      onChange={(e) => handleOptionChange(quiz.quiz_id, { type: 'correct_answer', value: e.target.value })}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-          <div>
-            <label>Description:</label>
-            <input
-              type="text"
-              name="description"
-              value={quizData.description}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <button type="submit">{isEditing ? 'Save Changes' : 'Create Quiz'}</button>
-          {isEditing && <button type="button" onClick={() => setIsEditing(false)}>Cancel</button>}
-        </form>
-      </div>
-
-      <div className="form-container">
-        <h3>Add Question</h3>
-        <form onSubmit={handleAddQuestion}>
-          <div>
-            <label>Question Text:</label>
-            <input
-              type="text"
-              name="text"
-              value={questionData.text}
-              onChange={handleQuestionChange}
-            />
-          </div>
-          <div>
-            <label>Options (comma separated):</label>
-            <input
-              type="text"
-              name="options"
-              value={questionData.options}
-              onChange={handleQuestionChange}
-            />
-          </div>
-          <button type="submit">Add Question</button>
-        </form>
+        ))}
       </div>
     </div>
   );

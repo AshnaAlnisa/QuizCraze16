@@ -1,22 +1,30 @@
-// src/components/Dashboard/Leaderboard.js
-
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const Leaderboard = () => {
-  // Mock leaderboard data (replace with actual data fetching)
   const [leaderboardData, setLeaderboardData] = useState([]);
 
   useEffect(() => {
-    // Example of fetching leaderboard data (replace with your actual fetch logic)
-    // Mock data for demonstration
-    const mockData = [
-      { username: 'User1', score: 100 },
-      { username: 'User2', score: 95 },
-      { username: 'User3', score: 90 },
-      { username: 'User4', score: 85 },
-      { username: 'User5', score: 80 },
-    ];
-    setLeaderboardData(mockData);
+    const fetchLeaderboardData = async () => {
+      try {
+        const response = await axios.post('http://localhost:5164/viewLeaderboard', { eventID: "1001" });
+        if (response.status === 200) {
+          const responseData = response.data;
+          if (responseData.rData && responseData.rData.items) {
+            setLeaderboardData(responseData.rData.items);
+            console.log("Leaderboard Data:", responseData.rData.items);
+          } else {
+            console.log("No leaderboard data in response");
+          }
+        } else {
+          console.log("Failed to fetch leaderboard data - status:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching leaderboard data:", error);
+      }
+    };
+
+    fetchLeaderboardData();
   }, []);
 
   return (
@@ -27,6 +35,8 @@ const Leaderboard = () => {
           <tr>
             <th>Rank</th>
             <th>Username</th>
+            <th>Name</th>
+            <th>Quiz Title</th>
             <th>Score</th>
           </tr>
         </thead>
@@ -35,6 +45,8 @@ const Leaderboard = () => {
             <tr key={index}>
               <td>{index + 1}</td>
               <td>{user.username}</td>
+              <td>{user.name}</td>
+              <td>{user.quiz_title}</td>
               <td>{user.score}</td>
             </tr>
           ))}

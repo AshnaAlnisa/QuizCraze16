@@ -65,9 +65,9 @@ const AdminDashboard = () => {
             <ul>
               <li><button onClick={() => setActiveSection('userManagement')}>User Management</button></li>
               <li><button onClick={() => setActiveSection('quizManagement')}>Quiz Management</button></li>
+              <li><button onClick={() => setActiveSection('contentManagement')}>Add Quizzes</button></li>
               <li><button onClick={() => setActiveSection('analytics')}>Analytics</button></li>
               <li><button onClick={() => setActiveSection('contactusFormDetails')}>Contact Us Form Details</button></li>
-              <li><button onClick={() => setActiveSection('contentManagement')}>Content Management</button></li>
               <li><button onClick={handleLogout}>Logout</button></li>
             </ul>
           </div>

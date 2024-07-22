@@ -1,36 +1,58 @@
-// src/components/Dashboard/MyResults.js
-
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const MyResults = () => {
-  // Mock quiz results data (replace with actual data fetching)
+const QuizResults = () => {
   const [quizResults, setQuizResults] = useState([]);
+  const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
-    // Example of fetching quiz results data (replace with your actual fetch logic)
-    // Mock data for demonstration
-    const mockResults = [
-      { quizId: 1, quizName: 'Quiz 1', score: 80 },
-      { quizId: 2, quizName: 'Quiz 2', score: 75 },
-      { quizId: 3, quizName: 'Quiz 3', score: 90 },
-    ];
-    setQuizResults(mockResults);
-  }, []);
+    const fetchQuizResults = async () => {
+      try {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        const userEmail = currentUser?.email;
+        setUserEmail(userEmail); // Set userEmail state for later use
+
+        const response = await axios.post('http://localhost:5164/viewResult', {
+          eventID: "1001",
+          addInfo: { email: userEmail }
+        });
+
+        if (response.status === 200) {
+          const responseData = response.data;
+          if (responseData.rData && responseData.rData.items) {
+            setQuizResults(responseData.rData.items);
+            console.log("Quiz Results:", responseData.rData.items);
+          } else {
+            console.log("No quiz results data in response");
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching quiz results:", error);
+      }
+    };
+
+    fetchQuizResults();
+  }, []); // Empty dependency array ensures useEffect runs only once
 
   return (
     <div>
-      <h2>My Results</h2>
+      <h2>My Quiz Results</h2>
+      <p>Email: {userEmail}</p>
       <table>
         <thead>
           <tr>
             <th>Quiz</th>
+            <th>Correct Answers</th>
+            <th>Incorrect Answers</th>
             <th>Score</th>
           </tr>
         </thead>
         <tbody>
           {quizResults.map((result, index) => (
             <tr key={index}>
-              <td>{result.quizName}</td>
+              <td>{result.quiz_name}</td>
+              <td>{result.correct_answer}</td>
+              <td>{result.incorrect_answer}</td>
               <td>{result.score}</td>
             </tr>
           ))}
@@ -40,4 +62,4 @@ const MyResults = () => {
   );
 };
 
-export default MyResults;
+export default QuizResults;

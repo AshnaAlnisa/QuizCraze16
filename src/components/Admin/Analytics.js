@@ -1,35 +1,33 @@
-// src/components/Admin/Analytics.js
-
 import React, { useState, useEffect } from 'react';
 import '../../styles/analytics.css';
+import axios from 'axios';
 
 const Analytics = () => {
   const [quizPerformance, setQuizPerformance] = useState([]);
   const [userActivity, setUserActivity] = useState([]);
-  const [siteTraffic, setSiteTraffic] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock data fetching function (replace with actual API call)
     const fetchAnalyticsData = async () => {
-      const mockQuizPerformance = [
-        { quizId: 1, title: 'Quiz 1', averageScore: 75 },
-        { quizId: 2, title: 'Quiz 2', averageScore: 85 },
-        { quizId: 3, title: 'Quiz 3', averageScore: 65 },
-      ];
-      const mockUserActivity = [
-        { userId: 1, username: 'User1', quizzesTaken: 5 },
-        { userId: 2, username: 'User2', quizzesTaken: 3 },
-        { userId: 3, username: 'User3', quizzesTaken: 8 },
-      ];
-      const mockSiteTraffic = [
-        { date: '2024-07-01', visits: 150 },
-        { date: '2024-07-02', visits: 200 },
-        { date: '2024-07-03', visits: 250 },
-      ];
+      try {
+        const [quizPerformanceResponse, userActivityResponse] = await Promise.all([
+          axios.post('http://localhost:5164/viewQuizPerformance', { eventID: "1001"  }),
+          axios.post('http://localhost:5164/viewUserActivity', { eventID: "1001"  })
+        ]);
 
-      setQuizPerformance(mockQuizPerformance);
-      setUserActivity(mockUserActivity);
-      setSiteTraffic(mockSiteTraffic);
+        if (quizPerformanceResponse.data.rData && quizPerformanceResponse.data.rData.items) {
+          setQuizPerformance(quizPerformanceResponse.data.rData.items);
+        }
+
+        if (userActivityResponse.data.rData && userActivityResponse.data.rData.items) {
+          setUserActivity(userActivityResponse.data.rData.items);
+        }
+
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching analytics data:', error);
+        setLoading(false);
+      }
     };
 
     fetchAnalyticsData();
@@ -38,70 +36,56 @@ const Analytics = () => {
   return (
     <div className="analytics-container">
       <h2>Analytics</h2>
-      
-      <section>
-        <h3>Quiz Performance</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Quiz ID</th>
-              <th>Title</th>
-              <th>Average Score</th>
-            </tr>
-          </thead>
-          <tbody>
-            {quizPerformance.map((quiz) => (
-              <tr key={quiz.quizId}>
-                <td>{quiz.quizId}</td>
-                <td>{quiz.title}</td>
-                <td>{quiz.averageScore}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-      
-      <section>
-        <h3>User Activity</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>User ID</th>
-              <th>Username</th>
-              <th>Quizzes Taken</th>
-            </tr>
-          </thead>
-          <tbody>
-            {userActivity.map((user) => (
-              <tr key={user.userId}>
-                <td>{user.userId}</td>
-                <td>{user.username}</td>
-                <td>{user.quizzesTaken}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-      
-      <section>
-        <h3>Site Traffic</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Visits</th>
-            </tr>
-          </thead>
-          <tbody>
-            {siteTraffic.map((traffic, index) => (
-              <tr key={index}>
-                <td>{traffic.date}</td>
-                <td>{traffic.visits}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
+
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <section>
+            <h3>Quiz Performance</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Quiz ID</th>
+                  <th>Title</th>
+                  <th>Total plays of the quiz</th>
+                </tr>
+              </thead>
+              <tbody>
+                {quizPerformance.map((quiz) => (
+                  <tr key={quiz.quiz_id}>
+                    <td>{quiz.quiz_id}</td>
+                    <td>{quiz.quiz_title}</td>
+                    <td>{quiz.times_played}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+
+          <section>
+            <h3>User Activity</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>User ID</th>
+                  <th>Username</th>
+                  <th>Total Quizzes Taken</th>
+                </tr>
+              </thead>
+              <tbody>
+                {userActivity.map((user) => (
+                  <tr key={user.user_id}>
+                    <td>{user.user_id}</td>
+                    <td>{user.username}</td>
+                    <td>{user.total_quizzes_taken}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        </>
+      )}
     </div>
   );
 };
