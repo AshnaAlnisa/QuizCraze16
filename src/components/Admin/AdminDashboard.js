@@ -5,8 +5,8 @@ import UserManagement from './UserManagement';
 import QuizManagement from './QuizManagement';
 import Analytics from './Analytics';
 import ContentManagement from './ContentManagement';
-import '../../styles/adminDashboard.css';
 import ContactUsFormDetails from './ContactUsFormDetails';
+import '../../styles/adminDashboard.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -63,18 +63,53 @@ const AdminDashboard = () => {
           <div className="dashboard-links">
             <h2>Admin Dashboard</h2>
             <ul>
-              <li><button onClick={() => setActiveSection('userManagement')}>User Management</button></li>
-              <li><button onClick={() => setActiveSection('quizManagement')}>Quiz Management</button></li>
-              <li><button onClick={() => setActiveSection('contentManagement')}>Add Quizzes</button></li>
-              <li><button onClick={() => setActiveSection('analytics')}>Analytics</button></li>
-              <li><button onClick={() => setActiveSection('contactusFormDetails')}>Contact Us Form Details</button></li>
-              <li><button onClick={handleLogout}>Logout</button></li>
+              <li>
+                <button
+                  className={activeSection === 'userManagement' ? 'active' : ''}
+                  onClick={() => setActiveSection('userManagement')}
+                >
+                  User Management
+                </button>
+              </li>
+              <li>
+                <button
+                  className={activeSection === 'quizManagement' ? 'active' : ''}
+                  onClick={() => setActiveSection('quizManagement')}
+                >
+                  Quiz Management
+                </button>
+              </li>
+              <li>
+                <button
+                  className={activeSection === 'contentManagement' ? 'active' : ''}
+                  onClick={() => setActiveSection('contentManagement')}
+                >
+                  Add Quizzes
+                </button>
+              </li>
+              <li>
+                <button
+                  className={activeSection === 'analytics' ? 'active' : ''}
+                  onClick={() => setActiveSection('analytics')}
+                >
+                  Analytics
+                </button>
+              </li>
+              <li>
+                <button
+                  className={activeSection === 'contactusFormDetails' ? 'active' : ''}
+                  onClick={() => setActiveSection('contactusFormDetails')}
+                >
+                  Contact Us Form Details
+                </button>
+              </li>
+              <li>
+                <button onClick={handleLogout}>Logout</button>
+              </li>
             </ul>
           </div>
         </div>
-        <div className="right-content">
-          {renderContent()}
-        </div>
+        <div className="right-content">{renderContent()}</div>
       </div>
     </div>
   );

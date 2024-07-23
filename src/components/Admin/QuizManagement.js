@@ -1,3 +1,5 @@
+// src/components/Admin/QuizManagement.js
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../styles/quizManagement.css';
@@ -135,13 +137,13 @@ const QuizManagement = () => {
         option4: quiz.option4,
         correct_answer: quiz.correct_answer
       }));
-  
+
       // Send the payload to the server
       const response = await axios.post('http://localhost:5164/updateQuizzes', {
         eventID: "1001",
         addInfo: { quizzes: payload } // Wrap the array in the addInfo object
       });
-  
+
       const data = response.data;
       if (data && data.rMessage === "Successful") {
         // Update quiz card in state
@@ -165,48 +167,6 @@ const QuizManagement = () => {
       console.error('Error updating quizzes:', error);
     }
   };
-  
-
-  // const handleSaveQuizzes = async () => {
-  //   try {
-  //     for (const quiz of selectedQuizCard.quizzes) {
-  //       const response = await axios.post('http://localhost:5164/updateQuiz', {
-  //         eventID: "1001",
-  //         addInfo: {
-  //           quiz_id: quiz.quiz_id,
-  //           quiz_card_id : quiz.quiz_card_id,
-  //           question: quiz.question,
-  //           option1: quiz.option1,
-  //           option2: quiz.option2,
-  //           option3: quiz.option3,
-  //           option4: quiz.option4,
-  //           correct_answer: quiz.correct_answer
-  //         }
-  //       });
-  //       const data = response.data;
-  //       if (data && data.rMessage !== "Successful") {
-  //         console.error('Failed to update quiz question:', data);
-  //         return;
-  //       }
-  //     }
-  //     // Update quiz card in state
-  //     setQuizCards(quizCards.map(card => {
-  //       if (card.quiz_card_id === selectedQuizCard.id) {
-  //         return {
-  //           ...card,
-  //           title: quizCardTitle,
-  //           no_of_questions: quizCardNoOfQuestions
-  //         };
-  //       }
-  //       return card;
-  //     }));
-  //     setSelectedQuizCard(null);
-  //     setQuizCardTitle('');
-  //     setQuizCardNoOfQuestions('');
-  //   } catch (error) {
-  //     console.error('Error updating quiz questions:', error);
-  //   }
-  // };
 
   const handleOptionChange = (quizId, option) => {
     setSelectedQuizCard({
@@ -259,26 +219,31 @@ const QuizManagement = () => {
                       type="text"
                       value={quiz.option1}
                       onChange={(e) => handleOptionChange(quiz.quiz_id, { type: 'option1', value: e.target.value })}
+                      placeholder="Option 1"
                     />
                     <input
                       type="text"
                       value={quiz.option2}
                       onChange={(e) => handleOptionChange(quiz.quiz_id, { type: 'option2', value: e.target.value })}
+                      placeholder="Option 2"
                     />
                     <input
                       type="text"
                       value={quiz.option3}
                       onChange={(e) => handleOptionChange(quiz.quiz_id, { type: 'option3', value: e.target.value })}
+                      placeholder="Option 3"
                     />
                     <input
                       type="text"
                       value={quiz.option4}
                       onChange={(e) => handleOptionChange(quiz.quiz_id, { type: 'option4', value: e.target.value })}
+                      placeholder="Option 4"
                     />
                     <input
                       type="text"
                       value={quiz.correct_answer}
                       onChange={(e) => handleOptionChange(quiz.quiz_id, { type: 'correct_answer', value: e.target.value })}
+                      placeholder="Correct Answer"
                     />
                   </div>
                 ))}

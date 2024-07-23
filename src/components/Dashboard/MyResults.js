@@ -45,6 +45,7 @@ const QuizResults = () => {
             <th>Correct Answers</th>
             <th>Incorrect Answers</th>
             <th>Score</th>
+            <th>Date</th>
           </tr>
         </thead>
         <tbody>
@@ -54,6 +55,7 @@ const QuizResults = () => {
               <td>{result.correct_answer}</td>
               <td>{result.incorrect_answer}</td>
               <td>{result.score}</td>
+              <td>{result.quiz_date}</td>
             </tr>
           ))}
         </tbody>

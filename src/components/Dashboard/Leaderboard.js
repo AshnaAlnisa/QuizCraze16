@@ -38,6 +38,7 @@ const Leaderboard = () => {
             <th>Name</th>
             <th>Quiz Title</th>
             <th>Score</th>
+            {/* <th>Date</th> */}
           </tr>
         </thead>
         <tbody>
@@ -48,6 +49,7 @@ const Leaderboard = () => {
               <td>{user.name}</td>
               <td>{user.quiz_title}</td>
               <td>{user.score}</td>
+              {/* <td>{user.quiz_date}</td> */}
             </tr>
           ))}
         </tbody>

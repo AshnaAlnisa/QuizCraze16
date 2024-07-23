@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import '../../styles/userManagement.css';
 import axios from 'axios';
+import '../../styles/userManagement.css';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [quizResults, setQuizResults] = useState({});
+  const [selectedUserEmail, setSelectedUserEmail] = useState(null);
 
   useEffect(() => {
-    const fetchUsers1 = async () => {
+    const fetchUsers = async () => {
       try {
         const response = await axios.post('http://localhost:5164/viewUsers', { eventID: "1001" });
         if (response.status === 200) {
@@ -24,7 +26,7 @@ const UserManagement = () => {
       }
     };
 
-    fetchUsers1();
+    fetchUsers();
   }, []);
 
   const handleDelete = async (user_id) => {
@@ -52,15 +54,44 @@ const UserManagement = () => {
     }
   };
 
-  const handleConfirmDelete = () => {
-    if (confirmDelete !== null) {
-      handleDelete(users[confirmDelete].user_id);
-      setConfirmDelete(null); // Reset confirmation state
-    }
+  const handleConfirmDelete = (index) => {
+    setConfirmDelete(index);
   };
 
   const handleCancelDelete = () => {
-    setConfirmDelete(null); // Reset confirmation state
+    setConfirmDelete(null);
+  };
+
+  const handleViewResults = async (email) => {
+    try {
+      const response = await axios.post('http://localhost:5164/viewResult', {
+        eventID: "1001",
+        addInfo: { email }
+      });
+  
+      if (response.status === 200) {
+        const responseData = response.data;
+        if (responseData.rData && responseData.rData.items && responseData.rData.items.length > 0) {
+          setQuizResults(prevState => ({
+            ...prevState,
+            [email]: responseData.rData.items
+          }));
+          setSelectedUserEmail(email);
+          console.log(`Quiz Results for user ${email}:`, responseData.rData.items);
+        } else {
+          console.log(`No quiz results found for user ${email}`);
+        }
+      } else {
+        console.log(`Failed to fetch quiz results for user ${email}. Status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error(`Error fetching quiz results for user ${email}:`, error);
+    }
+  };
+  
+
+  const handleHideResults = () => {
+    setSelectedUserEmail(null);
   };
 
   return (
@@ -79,31 +110,73 @@ const UserManagement = () => {
         </thead>
         <tbody>
           {users.map((user, index) => (
-            <tr key={user.user_id}>
-              <td>{user.name}</td>
-              <td>{user.username}</td>
-              <td>{user.email}</td>
-              <td>{user.address}</td>
-              <td>
-              <img src={`data:image/png;base64, ${user.picture}`} alt="Profile Image" width={60} />
-              </td>
-              <td>
-                {confirmDelete === index ? (
-                  <div>
-                    <button className="delete-button" onClick={handleConfirmDelete}>
-                      Confirm Delete
-                    </button>
-                    <button className="delete-button" onClick={handleCancelDelete}>
-                      Cancel
-                    </button>
-                  </div>
-                ) : (
-                  <button className="delete-button" onClick={() => setConfirmDelete(index)}>
-                    Delete
-                  </button>
-                )}
-              </td>
-            </tr>
+            <React.Fragment key={user.user_id}>
+              <tr>
+                <td>{user.name}</td>
+                <td>{user.username}</td>
+                <td>{user.email}</td>
+                <td>{user.address}</td>
+                <td>
+                  <img src={`data:image/png;base64, ${user.picture}`} alt="Profile Image" width={60} />
+                </td>
+                <td>
+                  {confirmDelete === index ? (
+                    <div>
+                      <button className="delete-button" onClick={() => handleDelete(user.user_id)}>
+                        Confirm Delete
+                      </button>
+                      <button className="delete-button" onClick={handleCancelDelete}>
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <button className="delete-button" onClick={() => handleConfirmDelete(index)}>
+                        Delete
+                      </button>
+                      {selectedUserEmail === user.email ? (
+                        <button className="view-button" onClick={handleHideResults}>
+                          Hide Results
+                        </button>
+                      ) : (
+                        <button className="view-button" onClick={() => handleViewResults(user.email)}>
+                          View Results
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </td>
+              </tr>
+              {selectedUserEmail === user.email && (
+                <tr>
+                  <td colSpan="6">
+                    <h3>Quiz Results for {user.name}</h3>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Quiz</th>
+                          <th>Correct Answers</th>
+                          <th>Incorrect Answers</th>
+                          <th>Score</th>
+                          <th>Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {quizResults[user.email]?.map((result, index) => (
+                          <tr key={index}>
+                            <td>{result.quiz_name}</td>
+                            <td>{result.correct_answer}</td>
+                            <td>{result.incorrect_answer}</td>
+                            <td>{result.score}</td>
+                            <td>{result.quiz_date}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              )}
+            </React.Fragment>
           ))}
         </tbody>
       </table>

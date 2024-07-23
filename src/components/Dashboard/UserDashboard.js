@@ -7,7 +7,7 @@ import EditProfile from '../Dashboard/EditProfile';
 import ContactUs from '../Dashboard/ContactUs';
 import QuizList from '../Quiz/QuizList';
 import axios from 'axios';
-
+import '../../styles/userDashboard.css';
 const quizzes = [
   { id: 1, title: 'Quiz 1', description: 'Description for Quiz 1' },
   { id: 2, title: 'Quiz 2', description: 'Description for Quiz 2' },
@@ -15,7 +15,7 @@ const quizzes = [
 ];
 
 const UserDashboardPage = () => {
-  const [activeSection, setActiveSection] = useState(null);
+  const [activeSection, setActiveSection] = useState('allQuizzes'); // Default active section
   const [user, setUser] = useState({
     user_id: '',
     username: '',
@@ -51,25 +51,6 @@ const UserDashboardPage = () => {
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
-    }
-  };
-
-  const renderContent = () => {
-    switch (activeSection) {
-      case 'changePassword':
-        return <ChangePassword />;
-      case 'leaderboard':
-        return <Leaderboard />;
-      case 'myResults':
-        return <MyResults />;
-      case 'editProfile':
-        return <EditProfile />;
-      case 'ContactUs':
-        return <ContactUs />;
-      case 'allQuizzes':
-        return <QuizList quizzes={quizzes} />;
-      default:
-        return null;
     }
   };
 
@@ -112,6 +93,25 @@ const UserDashboardPage = () => {
     greeting = "Good Evening!"
   }
 
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'changePassword':
+        return <ChangePassword />;
+      case 'leaderboard':
+        return <Leaderboard />;
+      case 'myResults':
+        return <MyResults />;
+      case 'editProfile':
+        return <EditProfile />;
+      case 'ContactUs':
+        return <ContactUs />;
+      case 'allQuizzes':
+        return <QuizList quizzes={quizzes} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="container">
       <div className="dashboard">
@@ -119,19 +119,18 @@ const UserDashboardPage = () => {
           <div className="dashboard-links">
             <h2>Dashboard Navigation</h2>
             <ul>
-              <li><button onClick={() => handleNavigation('allQuizzes')}>All Quizzes</button></li>
-              <li><button onClick={() => handleNavigation('myResults')}>My Results</button></li>
-              <li><button onClick={() => handleNavigation('leaderboard')}>Leaderboard</button></li>
-              <li><button onClick={() => handleNavigation('changePassword')}>Change Password</button></li>
-              <li><button onClick={() => handleNavigation('editProfile')}>Edit Profile</button></li>
-              <li><button onClick={() => handleNavigation('ContactUs')}>Contact Us</button></li>
+              <li><button className={activeSection === 'allQuizzes' ? 'active' : ''} onClick={() => handleNavigation('allQuizzes')}>All Quizzes</button></li>
+              <li><button className={activeSection === 'myResults' ? 'active' : ''} onClick={() => handleNavigation('myResults')}>My Results</button></li>
+              <li><button className={activeSection === 'leaderboard' ? 'active' : ''} onClick={() => handleNavigation('leaderboard')}>Leaderboard</button></li>
+              <li><button className={activeSection === 'changePassword' ? 'active' : ''} onClick={() => handleNavigation('changePassword')}>Change Password</button></li>
+              <li><button className={activeSection === 'editProfile' ? 'active' : ''} onClick={() => handleNavigation('editProfile')}>Edit Profile</button></li>
+              <li><button className={activeSection === 'ContactUs' ? 'active' : ''} onClick={() => handleNavigation('ContactUs')}>Contact Us</button></li>
               <li><button onClick={handleLogout}>Logout</button></li>
             </ul>
           </div>
         </div>
         <div className="right-content">
           <h1>Hello {user.name}, {greeting}</h1>
-
           {renderContent()}
         </div>
       </div>

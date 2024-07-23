@@ -1,42 +1,65 @@
-/* src/styles/contentManagement.css */
+contentManagement.css
 
 .content-management-container {
-    padding: 20px;
-  }
-  
-  .content-management-container h2 {
-    margin-bottom: 20px;
-  }
-  
-  section {
-    margin-bottom: 20px;
-  }
-  
-  section h3 {
-    margin-bottom: 10px;
-  }
-  
-  input {
-    margin-right: 10px;
-    padding: 5px;
-  }
-  
-  button {
-    padding: 5px 10px;
-  }
-  
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  ul li {
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  ul li button {
-    margin-left: 10px;
-  }
-  
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8; /* Light background */
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+
+
+.content-management-container .content-management-h3 {
+  margin-top: 20px;
+}
+
+.content-management-container .content-management-section {
+  margin-top: 20px;
+}
+
+.content-management-container .content-management-input {
+  width: 95%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.content-management-container .content-management-question-section {
+  background-color: #fff; /* White background for each question section */
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+
+
+
+.content-management-container .content-management-button {
+  background-color: rgb(219, 139, 215); /* Magenta button background */
+  color: #fff; /* White button text */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.content-management-container .content-management-button:hover {
+  background-color: #b42986; /* Darker magenta on hover */
+}
+
+.content-management-container .content-management-ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.content-management-container .content-management-ul .content-management-li {
+  background-color: #fff; /* White background for list items */
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}

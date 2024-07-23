@@ -1,0 +1,13 @@
+.dashboard-links button.active {
+    background-color: rgb(184, 25, 147); /* Change to your desired color */
+    color: white; /* Change to contrast with background */
+  }
+
+  .dashboard-links button:hover{
+    background-color: rgb(184, 25, 147); /* Change to your desired color */
+    color: rgb(10, 10, 10); /* Change to contrast with background */
+  }
+
+
+  
+  

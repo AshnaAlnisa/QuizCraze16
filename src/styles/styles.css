@@ -8,7 +8,7 @@ body {
   }
   
   header {
-    background-color: #6200ea;
+    background-color: rgb(184, 25, 147);
     color: white;
     padding: 15px 20px;
     display: flex;
@@ -38,7 +38,7 @@ body {
   }
   
   footer {
-    background-color: #6200ea;
+    background-color: rgb(184, 25, 147);
     color: white;
     padding: 10px 20px;
     text-align: center;
@@ -179,7 +179,7 @@ body {
   display: block;
   width: 100%;
   padding: 12px;
-  background-color: #007bff;
+  background-color: rgb(206, 51, 170);
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -189,7 +189,7 @@ body {
 }
 
 .form button[type="submit"]:hover {
-  background-color: #0056b3;
+  background-color: #9c0b78;
 }
 
 @media (max-width: 600px) {
@@ -197,6 +197,8 @@ body {
     padding: 10px;
   }
 }
+
+
 
   
   

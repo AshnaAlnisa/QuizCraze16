@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../styles/contentManagement.css';
 
+
 const ContentManagement = () => {
   const [quizCards, setQuizCards] = useState([]);
   const [newQuizCardTitle, setNewQuizCardTitle] = useState('');
   const [newQuizCardNoOfQuestions, setNewQuizCardNoOfQuestions] = useState('');
-  
+
   const [questionSections, setQuestionSections] = useState([
     {
       question: '',
@@ -24,7 +25,7 @@ const ContentManagement = () => {
 
   const fetchQuizCards = async () => {
     try {
-      const response = await axios.get('http://localhost:5164/viewCardQuiz', { eventID: "1001" });
+      const response = await axios.get('http://localhost:5164/viewCardQuiz', { params: { eventID: "1001" } });
       const data = response.data;
       if (data && data.rData && data.rData.items) {
         setQuizCards(data.rData.items);
@@ -51,8 +52,9 @@ const ContentManagement = () => {
       if (quizCardData && quizCardData.rData && quizCardData.rMessage === "Successful") {
         console.log("Quiz card added successfully");
 
+        const quiz_card_id = quizCardData.rData.insertId;
+
         // Then add questions
-        const quiz_card_id = quizCardData.rData.quiz_card_id;
         for (let i = 0; i < questionSections.length; i++) {
           const questionData = questionSections[i];
           const addQuizResponse = await axios.post('http://localhost:5164/insertQuiz', {
@@ -127,27 +129,30 @@ const ContentManagement = () => {
 
   return (
     <div className="content-management-container">
-      <h2>Quiz Management</h2>
+      <h2 className="content-management-h2">Quiz Management</h2>
 
-      <section>
-        <h3>Add Quiz Card and Quiz Questions</h3>
+      <section className="content-management-section">
+        <h3 className="content-management-h3">Add Quiz Card and Quiz Questions</h3>
         <input
           type="text"
+          className="content-management-input"
           value={newQuizCardTitle}
           onChange={(e) => setNewQuizCardTitle(e.target.value)}
           placeholder="Quiz Card Title"
         />
         <input
           type="number"
+          className="content-management-input"
           value={newQuizCardNoOfQuestions}
           onChange={(e) => setNewQuizCardNoOfQuestions(e.target.value)}
           placeholder="Number of Questions"
         />
         {questionSections.map((section, index) => (
-          <div key={index} className="question-section">
-            <h4>Question {index + 1}</h4>
+          <div key={index} className="content-management-question-section">
+            <h4 className="content-management-h4">Question {index + 1}</h4>
             <input
               type="text"
+              className="content-management-input"
               name="question"
               value={section.question}
               onChange={(e) => handleQuestionChange(index, e)}
@@ -155,6 +160,7 @@ const ContentManagement = () => {
             />
             <input
               type="text"
+              className="content-management-input"
               name="option1"
               value={section.option1}
               onChange={(e) => handleQuestionChange(index, e)}
@@ -162,6 +168,7 @@ const ContentManagement = () => {
             />
             <input
               type="text"
+              className="content-management-input"
               name="option2"
               value={section.option2}
               onChange={(e) => handleQuestionChange(index, e)}
@@ -169,6 +176,7 @@ const ContentManagement = () => {
             />
             <input
               type="text"
+              className="content-management-input"
               name="option3"
               value={section.option3}
               onChange={(e) => handleQuestionChange(index, e)}
@@ -176,6 +184,7 @@ const ContentManagement = () => {
             />
             <input
               type="text"
+              className="content-management-input"
               name="option4"
               value={section.option4}
               onChange={(e) => handleQuestionChange(index, e)}
@@ -183,25 +192,26 @@ const ContentManagement = () => {
             />
             <input
               type="text"
+              className="content-management-input"
               name="correctAnswer"
               value={section.correctAnswer}
               onChange={(e) => handleQuestionChange(index, e)}
               placeholder="Correct Answer"
             />
             {questionSections.length > 1 && (
-              <button onClick={() => handleDeleteQuestion(index)}>Delete Question</button>
+              <button className="content-management-button" onClick={() => handleDeleteQuestion(index)}>Delete Question</button>
             )}
           </div>
         ))}
-        <button onClick={handleAddMoreQuestions}>Add More Questions</button>
-        <button onClick={handleAddQuizAndCard}>Add Quiz and Quiz Card</button>
+        <button className="content-management-button" onClick={handleAddMoreQuestions}>Add More Questions</button>
+        <button className="content-management-button" onClick={handleAddQuizAndCard}>Add Quiz and Quiz Card</button>
       </section>
 
-      <section>
-        <h3>Current Quiz Cards</h3>
-        <ul>
+      <section className="content-management-section">
+        <h3 className="content-management-h3">Current Quiz Cards</h3>
+        <ul className="content-management-ul">
           {quizCards.map((quizCard, index) => (
-            <li key={index}>
+            <li key={index} className="content-management-li">
               {quizCard.title} - {quizCard.no_of_questions} Questions
             </li>
           ))}

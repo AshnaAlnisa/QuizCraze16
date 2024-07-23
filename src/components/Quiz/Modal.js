@@ -1,12 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../styles/modal.css';
-import { Link, useNavigate } from 'react-router-dom';
-import QuizList from './QuizList';
+import { useNavigate } from 'react-router-dom';
 
 const Modal = ({ isOpen, onClose, correctAnswers, incorrectAnswers, score, userId, quizCardId }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [currentDate, setCurrentDate] = useState('');
+
+  const fetchCurrentDate = () => {
+    const date = new Date().toLocaleDateString();
+    setCurrentDate(date);
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchCurrentDate();
+    }
+  }, [isOpen]);
 
   const handleInsertResult = async () => {
     setIsSubmitting(true);
@@ -18,7 +29,8 @@ const Modal = ({ isOpen, onClose, correctAnswers, incorrectAnswers, score, userI
           quiz_card_id: quizCardId,
           correct_answer: correctAnswers,
           incorrect_answer: incorrectAnswers,
-          score: score*10
+          score: score * 10,
+          quiz_date: currentDate // Include current date in the request
         }
       });
 
@@ -44,7 +56,6 @@ const Modal = ({ isOpen, onClose, correctAnswers, incorrectAnswers, score, userI
   const handleCloseModal = () => {
     handleInsertResult(); // Insert result before closing
     onClose();
-    // onClose(); // Close the modal after inserting result
   };
 
   if (!isOpen) return null;
@@ -55,10 +66,9 @@ const Modal = ({ isOpen, onClose, correctAnswers, incorrectAnswers, score, userI
         <h2>Quiz Results</h2>
         <p>Correct Answers: {correctAnswers}</p>
         <p>Incorrect Answers: {incorrectAnswers}</p>
-        <p>Your Score: {score*10}</p>
+        <p>Your Score: {score * 10}</p>
         {/* {submitError && <p className="error-message">{submitError}</p>} */}
         <button onClick={handleCloseModal} disabled={isSubmitting}>Close</button>
-  
       </div>
     </div>
   );

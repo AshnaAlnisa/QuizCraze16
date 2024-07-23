@@ -1,18 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import '../../styles/quizList.css';
 import Modal from './Modal.js';
+import '../../styles/quizList.css';
 
 const QuizList = () => {
   const [quizzes, setQuizzes] = useState([]);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState({});
-  const [timer, setTimer] = useState(5); // 120 seconds = 2 minutes
+  const [timer, setTimer] = useState(59); // Initial timer value in seconds
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [incorrectAnswers, setIncorrectAnswers] = useState(0);
+  const [showTimeUpModal, setShowTimeUpModal] = useState(false); // State for time's up modal
   const timerRef = useRef(null); // Reference to the timer
 
   useEffect(() => {
@@ -35,13 +36,12 @@ const QuizList = () => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
-    setTimer(5);
+    setTimer(59); // Reset timer to initial value (e.g., 5 seconds)
     timerRef.current = setInterval(() => {
       setTimer(prev => {
         if (prev <= 1) {
           clearInterval(timerRef.current);
-          handleSubmitQuiz();
-          // setShowModal(true);
+          setShowTimeUpModal(true); // Show time's up modal
           return 0;
         }
         return prev - 1;
@@ -68,6 +68,7 @@ const QuizList = () => {
         setShowModal(false); // Hide modal if open
         setCorrectAnswers(0);
         setIncorrectAnswers(0);
+        setShowTimeUpModal(false); // Hide time's up modal if open
         startTimer(); // Start the timer when starting a new quiz
       }
     } catch (error) {
@@ -84,9 +85,7 @@ const QuizList = () => {
   };
 
   const handleSubmitQuiz = () => {
-    console.log('selectedQuiz:::',selectedQuiz)
     if (selectedQuiz) {
-      console.log('selectedQuiz:::',selectedQuiz)
       let newScore = 0;
       let correctCount = 0;
       let incorrectCount = 0;
@@ -147,7 +146,7 @@ const QuizList = () => {
     <div className="quiz-details">
       <h3>{quizCard.title}</h3>
       <p>{quizCard.no_of_questions}</p>
-      <div className="timer">Timer: {Math.floor(timer / 60)}:{timer % 60 < 10 ? `0${timer % 60}` : timer % 60} minutes</div>
+      <div className="timer">Timer: {Math.floor(timer / 60)}:{timer % 60 < 10 ? `0${timer % 60}` : timer % 60} seconds</div>
       <ul>
         {quizCard.quizzes.map(q => (
           <li key={q.quiz_id}>
@@ -178,8 +177,8 @@ const QuizList = () => {
           </li>
         ))}
       </ul>
-      <button onClick={handleSubmitQuiz}>Submit</button>
-      <button onClick={() => {
+      <button onClick={handleSubmitQuiz} className='button'>Submit</button>
+      <button className='button' onClick={() => {
         clearInterval(timerRef.current); // Stop the timer when going back
         setSelectedQuiz(null);
       }}>Back to Quizzes</button>
@@ -195,14 +194,29 @@ const QuizList = () => {
             <li key={quizCard.quiz_card_id}>
               <h3>{quizCard.title}</h3>
               <p>Total Questions : {quizCard.no_of_questions}</p>
-              <button onClick={() => handleStartQuiz(quizCard.quiz_card_id)}>Start Quiz</button>
+              <button onClick={() => handleStartQuiz(quizCard.quiz_card_id)} className='start-quiz'>Start Quiz</button>
             </li>
           ))}
         </ul>
       ) : (
         renderQuizQuestions(selectedQuiz)
       )}
-  
+
+      {/* Time's Up Modal */}
+      {showTimeUpModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Time's Up!</h2>
+            <p>Time is over. Please submit your quiz.</p>
+            <button onClick={() => {
+              setShowTimeUpModal(false); // Close time's up modal
+              handleSubmitQuiz(); // Handle quiz submission
+            }}>Submit Quiz</button>
+          </div>
+        </div>
+      )}
+
+      {/* Quiz Results Modal */}
       <Modal
         isOpen={showModal}
         onClose={() => setShowModal(false)}

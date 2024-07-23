@@ -1,36 +1,95 @@
 /* src/styles/quizManagement.css */
-.quiz-item, .quiz-question {
-    border: 1px solid #ccc;
-    padding: 1em;
-    margin-bottom: 1em;
-  }
-  
-  .quiz-item h3, .quiz-question h4 {
-    margin-top: 0;
-  }
-  
-  .quiz-item ul, .quiz-question ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .quiz-item ul li, .quiz-question ul li {
-    margin-bottom: 0.5em;
-  }
-  
-  .form-container {
-    margin-top: 2em;
-  }
-  
-  .form-container h3 {
-    margin-top: 0;
-  }
-  
-  .form-container form div {
-    margin-bottom: 1em;
-  }
-  
-  button {
-    margin-right: 0.5em;
-  }
-  
+
+.quiz-management {
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.quiz-management h2 {
+  color: #000000; /* Purple header */
+}
+
+.quiz-card {
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.quiz-card h3 {
+  color: #000000; /* Purple title */
+  margin-bottom: 10px;
+}
+
+.quiz-card p {
+  color: #333333;
+  margin-bottom: 10px;
+}
+
+.card-actions {
+  margin-top: 10px;
+}
+
+.card-actions button {
+  background-color: #daa5ca; /* Magenta button background */
+  color: #ffffff; /* White button text */
+  border: none;
+  padding: 10px 20px;
+  margin-right: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.card-actions button:hover {
+  background-color: #b11d78; /* Darker magenta on hover */
+}
+
+.edit-quiz-card {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.edit-quiz-card input[type="text"],
+.edit-quiz-card input[type="number"] {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+}
+
+.edit-quiz-card input[type="text"]:focus,
+.edit-quiz-card input[type="number"]:focus {
+  outline: none;
+  border-color: #6a0dad; /* Purple focus color */
+}
+
+.edit-question {
+  margin-bottom: 20px;
+}
+
+.edit-question p {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.edit-question input[type="text"] {
+  width: calc(100% - 20px);
+  padding: 8px;
+  margin-bottom: 5px;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+}
+
+.edit-question input[type="text"]:focus {
+  outline: none;
+  border-color: #6a0dad; /* Purple focus color */
+}
