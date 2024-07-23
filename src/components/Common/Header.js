@@ -9,9 +9,9 @@ const Header = () => (
     <div className="logo">Quiz App</div>
     <nav>
       <ul>
-        <li><Link to="/">Home</Link></li>
-        <li><Link to="/dashboard">Dashboard</Link></li>
-        <li><Link to="/admin">Admin</Link></li>
+        {/* <li><Link to="/">Home</Link></li> */}
+        {/* <li><Link to="/dashboard">Dashboard</Link></li>
+        <li><Link to="/admin">Admin</Link></li> */}
       </ul>
     </nav>
   </header>

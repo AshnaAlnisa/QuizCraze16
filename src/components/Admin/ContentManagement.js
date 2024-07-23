@@ -57,6 +57,7 @@ const ContentManagement = () => {
         // Then add questions
         for (let i = 0; i < questionSections.length; i++) {
           const questionData = questionSections[i];
+          console.log('questionData::::',questionData)
           const addQuizResponse = await axios.post('http://localhost:5164/insertQuiz', {
             eventID: "1001",
             addInfo: {

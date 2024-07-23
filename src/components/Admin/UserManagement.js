@@ -8,6 +8,10 @@ const UserManagement = () => {
   const [quizResults, setQuizResults] = useState({});
   const [selectedUserEmail, setSelectedUserEmail] = useState(null);
 
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  const isAdmin = currentUser?.isAdmin;
+  const adminEmail = currentUser?.email;
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -15,8 +19,10 @@ const UserManagement = () => {
         if (response.status === 200) {
           const responseData = response.data;
           if (responseData.rData && responseData.rData.items) {
-            setUsers(responseData.rData.items);
-            console.log("Users:", responseData.rData.items);
+            // Filter out the admin user's profile if isAdmin is true
+            const filteredUsers = responseData.rData.items.filter(user => !isAdmin || user.email !== adminEmail);
+            setUsers(filteredUsers);
+            console.log("Users:", filteredUsers);
           } else {
             console.log("No users data in response");
           }
@@ -27,7 +33,7 @@ const UserManagement = () => {
     };
 
     fetchUsers();
-  }, []);
+  }, [isAdmin, adminEmail]);
 
   const handleDelete = async (user_id) => {
     try {

@@ -46,7 +46,7 @@ const AdminDashboard = () => {
       // Assuming API response indicates successful logout
       if (response.data.rData.rMessage === 'Logout successful') {
         localStorage.removeItem('currentUser'); // Clear token from localStorage
-        navigate('/login'); // Redirect to login page after logout
+        navigate('/'); // Redirect to login page after logout
       } else {
         alert('Logout failed. Please try again.');
       }

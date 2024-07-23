@@ -39,7 +39,7 @@ const RegisterForm = () => {
 
         // localStorage.setItem('currentUser', JSON.stringify({ email: userEmail }));
 
-        navigate('/dashboard'); // Redirect to dashboard after successful registration
+        navigate('/login'); // Redirect to dashboard after successful registration
       } else {
         alert(response.data.rData.rMessage); // Alert user about registration failure
       }
@@ -47,6 +47,10 @@ const RegisterForm = () => {
       console.error('Error registering user:', error);
       alert('An error occurred. Please try again.'); // Alert user about generic error
     }
+  };
+
+  const navigateLogin = () => {
+    navigate('/login');
   };
 
   return (
@@ -92,7 +96,8 @@ const RegisterForm = () => {
         />
         <p>Enter "1234" as the captcha</p> {/* Simulated captcha for demo purposes */}
       </div>
-      <button type="submit">Register</button>
+      <button  type="submit">Register</button>
+      <button onClick={navigateLogin}>Login</button>
     </form>
   );
 };

@@ -102,15 +102,19 @@ const LoginForm = () => {
       if (res === "Signin Successful") {
         const token = response.data.rData.TOKEN;
         const userEmail = response.data.rData.email; // Adjust this according to actual response structure
-        
+        const isAdmin = response.data.rData.isAdmin;
         console.log('User Email:', userEmail); // Log the userEmail to verify
         
         // Store token and userEmail in localStorage
-        localStorage.setItem('currentUser', JSON.stringify({ token, email: userEmail }));
+        localStorage.setItem('currentUser', JSON.stringify({ token, email: userEmail, isAdmin }));
         
         console.log('Stored in localStorage:', localStorage.getItem('currentUser')); // Verify what's stored
+        if(isAdmin) {
+          navigate('/admin');
+        }else{
+          navigate('/dashboard');
+        }
         
-        navigate('/dashboard');
       } else {
         alert(response.data.rData.rMessage);
         // Clear form inputs on incorrect login
@@ -121,6 +125,10 @@ const LoginForm = () => {
       console.error('Error logging in:', error);
       alert('An error occurred. Please try again.');
     }
+  };
+
+  const navigateRegister = () => {
+    navigate('/register');
   };
 
   return (
@@ -146,6 +154,7 @@ const LoginForm = () => {
         />
       </div>
       <button type="submit">Login</button>
+      <button onClick={navigateRegister}>Register</button>
     </form>
   );
 };

@@ -71,7 +71,7 @@ const UserDashboardPage = () => {
 
       if (response.data.rData.rMessage === 'Logout successful') {
         localStorage.removeItem('currentUser');
-        navigate('/login');
+        navigate('/');
       } else {
         alert('Logout failed. Please try again.');
       }
