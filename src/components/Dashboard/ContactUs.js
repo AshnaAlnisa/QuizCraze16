@@ -49,7 +49,7 @@ const ContactUs = () => {
 
   return (
     <div className="changePassword-container">
-      <h2 className="changePassword-title">Contact Us</h2>
+      <h2 className="changePassword-title">Leave Your Ideas</h2>
       <form className="changePassword-form" onSubmit={handleSubmit}>
         <div className="changePassword-form-group">
           <label className="changePassword-label">Name:</label>

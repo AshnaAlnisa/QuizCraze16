@@ -93,3 +93,19 @@
   outline: none;
   border-color: #6a0dad; /* Purple focus color */
 }
+
+
+
+
+
+/* quizManagement.css */
+
+.success-message {
+  background-color: #28a745; /* Green background */
+  color: white;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  text-align: center;
+}
+

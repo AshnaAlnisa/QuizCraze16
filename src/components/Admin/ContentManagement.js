@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../styles/contentManagement.css';
 
-
 const ContentManagement = () => {
   const [quizCards, setQuizCards] = useState([]);
   const [newQuizCardTitle, setNewQuizCardTitle] = useState('');
@@ -35,9 +34,8 @@ const ContentManagement = () => {
     }
   };
 
-  const handleAddQuizAndCard = async () => {
+  const handleAddQuizCard = async () => {
     try {
-      // Add quiz card first
       const addQuizCardResponse = await axios.post('http://localhost:5164/insertCardQuiz', {
         eventID: "1001",
         addInfo: {
@@ -53,34 +51,6 @@ const ContentManagement = () => {
         console.log("Quiz card added successfully");
 
         const quiz_card_id = quizCardData.rData.insertId;
-
-        // Then add questions
-        for (let i = 0; i < questionSections.length; i++) {
-          const questionData = questionSections[i];
-          console.log('questionData::::',questionData)
-          const addQuizResponse = await axios.post('http://localhost:5164/insertQuiz', {
-            eventID: "1001",
-            addInfo: {
-              quiz_card_id: quiz_card_id,
-              question: questionData.question,
-              option1: questionData.option1,
-              option2: questionData.option2,
-              option3: questionData.option3,
-              option4: questionData.option4,
-              correct_answer: questionData.correctAnswer
-            }
-          });
-
-          console.log("Response from addQuiz API:", addQuizResponse);
-
-          const quizData = addQuizResponse.data;
-          if (quizData && quizData.rData && quizData.rMessage === "Successful") {
-            console.log("Quiz added successfully");
-          } else {
-            console.log("Failed to add quiz:", quizData);
-            return; // Exit loop if adding quiz fails
-          }
-        }
 
         // Update state with the new quiz card
         setQuizCards([...quizCards, { id: quiz_card_id, title: newQuizCardTitle, no_of_questions: newQuizCardNoOfQuestions }]);
@@ -99,7 +69,7 @@ const ContentManagement = () => {
         console.log("Failed to add quiz card:", quizCardData);
       }
     } catch (error) {
-      console.error('Error adding quiz card and quiz:', error);
+      console.error('Error adding quiz card:', error);
     }
   };
 
@@ -128,12 +98,41 @@ const ContentManagement = () => {
     }
   };
 
+  const handleAddQuizQuestion = async (index, quiz_card_id) => {
+    try {
+      const questionData = questionSections[index];
+      const addQuizResponse = await axios.post('http://localhost:5164/insertQuiz', {
+        eventID: "1001",
+        addInfo: {
+          quiz_card_id: quiz_card_id,
+          question: questionData.question,
+          option1: questionData.option1,
+          option2: questionData.option2,
+          option3: questionData.option3,
+          option4: questionData.option4,
+          correct_answer: questionData.correctAnswer
+        }
+      });
+
+      console.log("Response from addQuiz API:", addQuizResponse);
+
+      const quizData = addQuizResponse.data;
+      if (quizData && quizData.rData && quizData.rMessage === "Successful") {
+        console.log("Quiz added successfully");
+      } else {
+        console.log("Failed to add quiz:", quizData);
+      }
+    } catch (error) {
+      console.error('Error adding quiz:', error);
+    }
+  };
+
   return (
     <div className="content-management-container">
       <h2 className="content-management-h2">Quiz Management</h2>
 
       <section className="content-management-section">
-        <h3 className="content-management-h3">Add Quiz Card and Quiz Questions</h3>
+        <h3 className="content-management-h3">Add Quiz Card</h3>
         <input
           type="text"
           className="content-management-input"
@@ -148,6 +147,11 @@ const ContentManagement = () => {
           onChange={(e) => setNewQuizCardNoOfQuestions(e.target.value)}
           placeholder="Number of Questions"
         />
+        <button className="content-management-button" onClick={handleAddQuizCard}>Add Quiz Card</button>
+      </section>
+
+      <section className="content-management-section">
+        <h3 className="content-management-h3">Add Quiz Questions</h3>
         {questionSections.map((section, index) => (
           <div key={index} className="content-management-question-section">
             <h4 className="content-management-h4">Question {index + 1}</h4>
@@ -202,10 +206,10 @@ const ContentManagement = () => {
             {questionSections.length > 1 && (
               <button className="content-management-button" onClick={() => handleDeleteQuestion(index)}>Delete Question</button>
             )}
+            <button className="content-management-button" onClick={() => handleAddQuizQuestion(index, quizCards.length > 0 ? quizCards[quizCards.length - 1].id : null)}>Add Quiz Question</button>
           </div>
         ))}
         <button className="content-management-button" onClick={handleAddMoreQuestions}>Add More Questions</button>
-        <button className="content-management-button" onClick={handleAddQuizAndCard}>Add Quiz and Quiz Card</button>
       </section>
 
       <section className="content-management-section">

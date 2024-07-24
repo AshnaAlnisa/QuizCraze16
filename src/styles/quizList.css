@@ -51,12 +51,12 @@
 }
 
 .correct-option {
-  background-color: green;
+  background-color: rgb(50, 156, 50);
   color: white;
 }
 
 .incorrect-option {
-  background-color: red;
+  background-color: rgb(243, 66, 66);
   color: white;
 }
 

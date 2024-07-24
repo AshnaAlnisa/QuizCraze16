@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const EditProfile = () => {
   const navigate = useNavigate();
-  
+
   const [user, setUser] = useState({
     user_id: '',
     username: '',
@@ -16,6 +16,7 @@ const EditProfile = () => {
   });
 
   const [formEditable, setFormEditable] = useState(false); // State to toggle form editing
+  const [fileInputVisible, setFileInputVisible] = useState(false); // State to toggle file input visibility
 
   useEffect(() => {
     fetchUserData();
@@ -64,6 +65,7 @@ const EditProfile = () => {
 
   const handleEdit = () => {
     setFormEditable(true);
+    setFileInputVisible(true); // Show file input when editing starts
   };
 
   const handleUpdate = async () => {
@@ -84,6 +86,7 @@ const EditProfile = () => {
 
       if (response.status === 200) {
         setFormEditable(false); // Set form to non-editable after successful update
+        setFileInputVisible(false); // Hide file input after update
         alert('Profile updated successfully');
       } else {
         alert('Failed to update profile');
@@ -99,7 +102,9 @@ const EditProfile = () => {
       <h2>Edit Profile</h2>
       <div className="profile-picture">
         <img src={`data:image/png;base64, ${user.picture}`} alt="Profile Image" />
-        <input type="file" accept="image/*" onChange={handleFileChange} />
+        {formEditable && fileInputVisible && (
+          <input type="file" accept="image/*" onChange={handleFileChange} />
+        )}
       </div>
       <div className="profile-details">
         <label>Username:</label>
@@ -117,7 +122,10 @@ const EditProfile = () => {
         ) : (
           <>
             <button onClick={handleUpdate}>Update</button>
-            <button onClick={() => setFormEditable(false)}>Cancel</button>
+            <button onClick={() => {
+              setFormEditable(false);
+              setFileInputVisible(false);
+            }}>Cancel</button>
           </>
         )}
       </div>

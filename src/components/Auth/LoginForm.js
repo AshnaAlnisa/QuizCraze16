@@ -154,7 +154,8 @@ const LoginForm = () => {
         />
       </div>
       <button type="submit">Login</button>
-      <button onClick={navigateRegister}>Register</button>
+      <p>Doesn't have account? Register here..</p>
+      <button type='submit' onClick={navigateRegister}>Register</button>
     </form>
   );
 };

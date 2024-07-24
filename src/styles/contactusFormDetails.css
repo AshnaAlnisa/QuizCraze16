@@ -21,7 +21,10 @@
   }
   
   tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #ffffff;
+  }
+  tr:nth-child(odd) {
+    background-color: #fcfcfc;
   }
   
   tr:hover {
@@ -29,7 +32,7 @@
   }
   
   .delete-button {
-    background-color: #f44336;
+    background-color: #000000;
     color: white;
     border: none;
     padding: 8px 12px;

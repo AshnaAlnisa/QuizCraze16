@@ -97,7 +97,8 @@ const RegisterForm = () => {
         <p>Enter "1234" as the captcha</p> {/* Simulated captcha for demo purposes */}
       </div>
       <button  type="submit">Register</button>
-      <button onClick={navigateLogin}>Login</button>
+      <p>Already have an account?? Login here..</p>
+      <button type='submit' onClick={navigateLogin}>Login</button>
     </form>
   );
 };

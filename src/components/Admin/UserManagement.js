@@ -106,11 +106,11 @@ const UserManagement = () => {
       <table>
         <thead>
           <tr>
+            <th>Picture</th>
             <th>Name</th>
             <th>Username</th>
             <th>Email</th>
             <th>Address</th>
-            <th>Picture</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -118,13 +118,13 @@ const UserManagement = () => {
           {users.map((user, index) => (
             <React.Fragment key={user.user_id}>
               <tr>
+                <td>
+                  <img src={`data:image/png;base64, ${user.picture}`} alt="Profile Image" width={60} />
+                </td>
                 <td>{user.name}</td>
                 <td>{user.username}</td>
                 <td>{user.email}</td>
                 <td>{user.address}</td>
-                <td>
-                  <img src={`data:image/png;base64, ${user.picture}`} alt="Profile Image" width={60} />
-                </td>
                 <td>
                   {confirmDelete === index ? (
                     <div>

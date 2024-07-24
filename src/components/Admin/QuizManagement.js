@@ -1,5 +1,3 @@
-// src/components/Admin/QuizManagement.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../styles/quizManagement.css';
@@ -10,6 +8,15 @@ const QuizManagement = () => {
   const [quizCardTitle, setQuizCardTitle] = useState('');
   const [quizCardNoOfQuestions, setQuizCardNoOfQuestions] = useState('');
   const [originalQuizzes, setOriginalQuizzes] = useState([]);
+  const [successMessage, setSuccessMessage] = useState(null);
+
+const showSuccessMessage = (message) => {
+  setSuccessMessage(message);
+  setTimeout(() => {
+    setSuccessMessage(null);
+  }, 3000); // Clear message after 3 seconds
+};
+
 
   useEffect(() => {
     fetchQuizCards();
@@ -39,6 +46,7 @@ const QuizManagement = () => {
         if (data && data.rMessage === "Successful") {
           setQuizCards(quizCards.filter(card => card.quiz_card_id !== quizCardId));
           setSelectedQuizCard(null); // Clear selected quiz card after deletion
+          showSuccessMessage('Quiz card deleted successfully.');
         } else {
           console.error('Failed to delete quiz card:', data);
         }
@@ -47,6 +55,7 @@ const QuizManagement = () => {
       console.error('Error deleting quiz card:', error);
     }
   };
+  
 
   const handleEditQuizCard = async (quizCardId) => {
     try {
@@ -102,7 +111,6 @@ const QuizManagement = () => {
       });
       const data = response.data;
       if (data && data.rMessage === "Successful") {
-        // Update quiz card in state
         setQuizCards(quizCards.map(card => {
           if (card.quiz_card_id === selectedQuizCard.id) {
             return {
@@ -124,48 +132,41 @@ const QuizManagement = () => {
     }
   };
 
-  const handleSaveQuizzes = async () => {
+  const handleSaveQuiz = async (quizId) => {
     try {
-      // Prepare the payload with an array of updated questions
-      const payload = selectedQuizCard.quizzes.map(quiz => ({
-        quiz_id: quiz.quiz_id,
-        quiz_card_id: quiz.quiz_card_id, // Ensure you include quiz_card_id if required
-        question: quiz.question,
-        option1: quiz.option1,
-        option2: quiz.option2,
-        option3: quiz.option3,
-        option4: quiz.option4,
-        correct_answer: quiz.correct_answer
-      }));
+      const quizToUpdate = selectedQuizCard.quizzes.find(quiz => quiz.quiz_id === quizId);
+      if (!quizToUpdate) {
+        console.error(`Quiz with ID ${quizId} not found in selected quiz card.`);
+        return;
+      }
 
-      // Send the payload to the server
-      const response = await axios.post('http://localhost:5164/updateQuizzes', {
+      const response = await axios.post('http://localhost:5164/updateQuiz', {
         eventID: "1001",
-        addInfo: { quizzes: payload } // Wrap the array in the addInfo object
+        addInfo: {
+          quiz_id: quizToUpdate.quiz_id,
+          quiz_card_id: selectedQuizCard.id,
+          question: quizToUpdate.question,
+          option1: quizToUpdate.option1,
+          option2: quizToUpdate.option2,
+          option3: quizToUpdate.option3,
+          option4: quizToUpdate.option4,
+          correct_answer: quizToUpdate.correct_answer
+        }
       });
 
       const data = response.data;
       if (data && data.rMessage === "Successful") {
-        // Update quiz card in state
-        setQuizCards(quizCards.map(card => {
-          if (card.quiz_card_id === selectedQuizCard.id) {
-            return {
-              ...card,
-              title: quizCardTitle,
-              no_of_questions: quizCardNoOfQuestions
-            };
-          }
-          return card;
-        }));
-        setSelectedQuizCard(null);
-        setQuizCardTitle('');
-        setQuizCardNoOfQuestions('');
+        // Update state or perform necessary actions
       } else {
-        console.error('Failed to update quizzes:', data);
+        console.error(`Failed to update quiz with ID ${quizId}:`, data);
       }
     } catch (error) {
-      console.error('Error updating quizzes:', error);
+      console.error(`Error updating quiz with ID ${quizId}:`, error);
     }
+  };
+
+  const handleCancelQuiz = (quizId) => {
+    // Implement cancellation logic for a specific quiz if needed
   };
 
   const handleOptionChange = (quizId, option) => {
@@ -245,10 +246,12 @@ const QuizManagement = () => {
                       onChange={(e) => handleOptionChange(quiz.quiz_id, { type: 'correct_answer', value: e.target.value })}
                       placeholder="Correct Answer"
                     />
+                    <button onClick={() => handleSaveQuiz(quiz.quiz_id)}>Save</button>
+                    <button onClick={() => handleCancelQuiz(quiz.quiz_id)}>Cancel</button>
                   </div>
                 ))}
-                <button onClick={handleSaveQuizzes}>Save Quizzes</button>
-                <button onClick={handleCancelQuizzes}>Cancel</button>
+                {/* <button onClick={handleSaveQuizzes}>Save Quizzes</button> */}
+                <button onClick={handleCancelEdit}>Cancel</button>
               </div>
             )}
           </div>
