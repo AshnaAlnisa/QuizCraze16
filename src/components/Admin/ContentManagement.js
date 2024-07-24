@@ -6,6 +6,7 @@ const ContentManagement = () => {
   const [quizCards, setQuizCards] = useState([]);
   const [newQuizCardTitle, setNewQuizCardTitle] = useState('');
   const [newQuizCardNoOfQuestions, setNewQuizCardNoOfQuestions] = useState('');
+ const [maxValue, setMaxValue] = useState();
 
   const [questionSections, setQuestionSections] = useState([
     {
@@ -24,7 +25,7 @@ const ContentManagement = () => {
 
   const fetchQuizCards = async () => {
     try {
-      const response = await axios.get('http://localhost:5164/viewCardQuiz', { params: { eventID: "1001" } });
+      const response = await axios.post('http://localhost:5164/viewCardQuiz',  { eventID: "1001" } );
       const data = response.data;
       if (data && data.rData && data.rData.items) {
         setQuizCards(data.rData.items);
@@ -36,6 +37,9 @@ const ContentManagement = () => {
 
   const handleAddQuizCard = async () => {
     try {
+      const maxValue = Math.max(...quizCards.map(card => card.quiz_card_id));
+      console.log('maxValue:::',maxValue)
+      setMaxValue(maxValue);
       const addQuizCardResponse = await axios.post('http://localhost:5164/insertCardQuiz', {
         eventID: "1001",
         addInfo: {
@@ -47,10 +51,11 @@ const ContentManagement = () => {
       console.log("Response from addQuizCard API:", addQuizCardResponse);
 
       const quizCardData = addQuizCardResponse.data;
-      if (quizCardData && quizCardData.rData && quizCardData.rMessage === "Successful") {
+      if (quizCardData && quizCardData.rData && quizCardData.rStatus === 0) {
+        console.log('quizCardData::::::',quizCardData)
         console.log("Quiz card added successfully");
 
-        const quiz_card_id = quizCardData.rData.insertId;
+        const quiz_card_id = quizCardData.rData.quiz_card_id;
 
         // Update state with the new quiz card
         setQuizCards([...quizCards, { id: quiz_card_id, title: newQuizCardTitle, no_of_questions: newQuizCardNoOfQuestions }]);
@@ -104,7 +109,7 @@ const ContentManagement = () => {
       const addQuizResponse = await axios.post('http://localhost:5164/insertQuiz', {
         eventID: "1001",
         addInfo: {
-          quiz_card_id: quiz_card_id,
+          quiz_card_id: maxValue,
           question: questionData.question,
           option1: questionData.option1,
           option2: questionData.option2,
@@ -117,7 +122,7 @@ const ContentManagement = () => {
       console.log("Response from addQuiz API:", addQuizResponse);
 
       const quizData = addQuizResponse.data;
-      if (quizData && quizData.rData && quizData.rMessage === "Successful") {
+      if (quizData && quizData.rData && quizData.rStatus === 0) {
         console.log("Quiz added successfully");
       } else {
         console.log("Failed to add quiz:", quizData);

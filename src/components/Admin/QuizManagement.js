@@ -9,21 +9,22 @@ const QuizManagement = () => {
   const [quizCardNoOfQuestions, setQuizCardNoOfQuestions] = useState('');
   const [originalQuizzes, setOriginalQuizzes] = useState([]);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [loading, setLoading] = useState(false); // Loading state
 
-const showSuccessMessage = (message) => {
-  setSuccessMessage(message);
-  setTimeout(() => {
-    setSuccessMessage(null);
-  }, 3000); // Clear message after 3 seconds
-};
-
+  const showSuccessMessage = (message) => {
+    setSuccessMessage(message);
+    setTimeout(() => {
+      setSuccessMessage(null);
+    }, 3000); // Clear message after 3 seconds
+  };
 
   useEffect(() => {
     fetchQuizCards();
   }, []);
-
+  
   const fetchQuizCards = async () => {
     try {
+      setLoading(true); // Start loading
       const response = await axios.post('http://localhost:5164/viewCardQuiz', { eventID: "1001" });
       const data = response.data;
       if (data && data.rData && data.rData.items) {
@@ -31,20 +32,27 @@ const showSuccessMessage = (message) => {
       }
     } catch (error) {
       console.error('Error fetching quiz cards:', error);
+    } finally {
+      setLoading(false); // End loading
     }
   };
+  
 
   const handleDeleteQuizCard = async (quizCardId) => {
     try {
       const confirmDelete = window.confirm('Are you sure you want to delete this quiz card?');
       if (confirmDelete) {
+        setLoading(true); // Start loading
         const response = await axios.post('http://localhost:5164/deleteCardQuiz', {
           eventID: "1001",
           addInfo: { quiz_card_id: quizCardId }
         });
         const data = response.data;
-        if (data && data.rMessage === "Successful") {
-          setQuizCards(quizCards.filter(card => card.quiz_card_id !== quizCardId));
+        console.log('Server response:', data); // Log the server response
+        if (data && data.rStatus === 0) {
+          const updatedQuizCards = quizCards.filter(card => card.quiz_card_id !== quizCardId);
+          console.log('Updated quiz cards:', updatedQuizCards); // Log the updated state
+          setQuizCards(updatedQuizCards);
           setSelectedQuizCard(null); // Clear selected quiz card after deletion
           showSuccessMessage('Quiz card deleted successfully.');
         } else {
@@ -53,11 +61,40 @@ const showSuccessMessage = (message) => {
       }
     } catch (error) {
       console.error('Error deleting quiz card:', error);
+    } finally {
+      setLoading(false); // End loading
     }
   };
   
+  
+
+  // const handleDeleteQuizCard = async (quizCardId) => {
+  //   try {
+  //     const confirmDelete = window.confirm('Are you sure you want to delete this quiz card?');
+  //     if (confirmDelete) {
+  //       setLoading(true); // Start loading
+  //       const response = await axios.post('http://localhost:5164/deleteCardQuiz', {
+  //         eventID: "1001",
+  //         addInfo: { quiz_card_id: quizCardId }
+  //       });
+  //       const data = response.data;
+  //       if (data && data.rMessage === "DELETE SUCCESSFULLY.") {
+  //         setQuizCards(quizCards.filter(card => card.quiz_card_id !== quizCardId));
+  //         setSelectedQuizCard(null); // Clear selected quiz card after deletion
+  //         showSuccessMessage('Quiz card deleted successfully.');
+  //       } else {
+  //         console.error('Failed to delete quiz card:', data);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Error deleting quiz card:', error);
+  //   } finally {
+  //     setLoading(false); // End loading
+  //   }
+  // };
 
   const handleEditQuizCard = async (quizCardId) => {
+    setLoading(true); // Start loading
     try {
       const response = await axios.post('http://localhost:5164/viewQuizByQuizCardId', {
         eventID: "1001",
@@ -81,6 +118,8 @@ const showSuccessMessage = (message) => {
       }
     } catch (error) {
       console.error('Error editing quiz card:', error);
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
@@ -100,6 +139,7 @@ const showSuccessMessage = (message) => {
   };
 
   const handleSaveChanges = async () => {
+    setLoading(true); // Start loading
     try {
       const response = await axios.post('http://localhost:5164/updateCardQuiz', {
         eventID: "1001",
@@ -110,7 +150,7 @@ const showSuccessMessage = (message) => {
         }
       });
       const data = response.data;
-      if (data && data.rMessage === "Successful") {
+      if (data && data.rStatus === 0) {
         setQuizCards(quizCards.map(card => {
           if (card.quiz_card_id === selectedQuizCard.id) {
             return {
@@ -129,10 +169,13 @@ const showSuccessMessage = (message) => {
       }
     } catch (error) {
       console.error('Error updating quiz card:', error);
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
   const handleSaveQuiz = async (quizId) => {
+    setLoading(true); // Start loading
     try {
       const quizToUpdate = selectedQuizCard.quizzes.find(quiz => quiz.quiz_id === quizId);
       if (!quizToUpdate) {
@@ -155,13 +198,15 @@ const showSuccessMessage = (message) => {
       });
 
       const data = response.data;
-      if (data && data.rMessage === "Successful") {
+      if (data && data.rStatus === 0) {
         // Update state or perform necessary actions
       } else {
         console.error(`Failed to update quiz with ID ${quizId}:`, data);
       }
     } catch (error) {
       console.error(`Error updating quiz with ID ${quizId}:`, error);
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
@@ -186,6 +231,7 @@ const showSuccessMessage = (message) => {
 
   return (
     <div className="quiz-management">
+      {loading && <div className="loading-indicator">Loading...</div>}
       <h2>Quiz Management</h2>
       <div className="quiz-cards">
         {quizCards.map(quizCard => (
@@ -250,7 +296,6 @@ const showSuccessMessage = (message) => {
                     <button onClick={() => handleCancelQuiz(quiz.quiz_id)}>Cancel</button>
                   </div>
                 ))}
-                {/* <button onClick={handleSaveQuizzes}>Save Quizzes</button> */}
                 <button onClick={handleCancelEdit}>Cancel</button>
               </div>
             )}
@@ -259,6 +304,7 @@ const showSuccessMessage = (message) => {
       </div>
     </div>
   );
+  
 };
 
 export default QuizManagement;
