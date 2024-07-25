@@ -35,13 +35,25 @@ const ContentManagement = () => {
     }
   };
 
+  useEffect(() => {
+    // This useEffect will run every time quizCards state changes
+    if (quizCards.length > 0) {
+      const test = quizCards.map(card => card);
+      console.log('test:::', test);
+  
+      const maxValue = Math.max(...quizCards.map(card => parseInt(card.quiz_card_id))); // Ensure quiz_card_id is parsed to integer
+      console.log('maxValue:::', maxValue);
+      setMaxValue(maxValue);
+    }
+  }, [quizCards]);
+
   const handleAddQuizCard = async () => {
     try {
-      const test = quizCards.map(card => card)
-      console.log('test:::',test)
-      const maxValue = Math.max(...quizCards.map(card => card.quiz_card_id));
-      console.log('maxValue:::',maxValue)
-      setMaxValue(maxValue);
+      // const test = quizCards.map(card => card)
+      // console.log('test:::',test)
+      // const maxValue = Math.max(...quizCards.map(card => card.quiz_card_id));
+      // console.log('maxValue:::',maxValue)
+      // setMaxValue(maxValue);
       const addQuizCardResponse = await axios.post('http://localhost:5164/insertCardQuiz', {
         eventID: "1001",
         addInfo: {
@@ -60,7 +72,7 @@ const ContentManagement = () => {
         const quiz_card_id = maxValue;
 
         // Update state with the new quiz card
-        setQuizCards([...quizCards, { id: quiz_card_id, title: newQuizCardTitle, no_of_questions: newQuizCardNoOfQuestions }]);
+        setQuizCards([...quizCards, { quiz_card_id: quiz_card_id, title: newQuizCardTitle, no_of_questions: newQuizCardNoOfQuestions }]);
         // Clear input fields
         // setNewQuizCardTitle('');
         // setNewQuizCardNoOfQuestions('');
@@ -111,7 +123,7 @@ const ContentManagement = () => {
       const addQuizResponse = await axios.post('http://localhost:5164/insertQuiz', {
         eventID: "1001",
         addInfo: {
-          quiz_card_id: maxValue,
+          quiz_card_id: maxValue+1,
           question: questionData.question,
           option1: questionData.option1,
           option2: questionData.option2,
@@ -124,7 +136,7 @@ const ContentManagement = () => {
       console.log("Response from addQuiz API:", addQuizResponse);
 
       const quizData = addQuizResponse.data;
-      if (quizData && quizData.rData && quizData.rMessage === "Successful") {
+      if (quizData && quizData.rData && quizData.rStatus === 0) {
         console.log("Quiz added successfully");
       } else {
         console.log("Failed to add quiz:", quizData);
@@ -146,6 +158,7 @@ const ContentManagement = () => {
           value={newQuizCardTitle}
           onChange={(e) => setNewQuizCardTitle(e.target.value)}
           placeholder="Quiz Card Title"
+          required
         />
         <input
           type="number"
@@ -153,6 +166,7 @@ const ContentManagement = () => {
           value={newQuizCardNoOfQuestions}
           onChange={(e) => setNewQuizCardNoOfQuestions(e.target.value)}
           placeholder="Number of Questions"
+          required
         />
         <button className="content-management-button" onClick={handleAddQuizCard}>Add Quiz Card</button>
       </section>
@@ -169,6 +183,7 @@ const ContentManagement = () => {
               value={section.question}
               onChange={(e) => handleQuestionChange(index, e)}
               placeholder="Question"
+              required
             />
             <input
               type="text"
@@ -177,6 +192,7 @@ const ContentManagement = () => {
               value={section.option1}
               onChange={(e) => handleQuestionChange(index, e)}
               placeholder="Option 1"
+              required
             />
             <input
               type="text"
@@ -185,6 +201,7 @@ const ContentManagement = () => {
               value={section.option2}
               onChange={(e) => handleQuestionChange(index, e)}
               placeholder="Option 2"
+              required
             />
             <input
               type="text"
@@ -209,6 +226,7 @@ const ContentManagement = () => {
               value={section.correctAnswer}
               onChange={(e) => handleQuestionChange(index, e)}
               placeholder="Correct Answer"
+              required
             />
             {questionSections.length > 1 && (
               <button className="content-management-button" onClick={() => handleDeleteQuestion(index)}>Delete Question</button>
