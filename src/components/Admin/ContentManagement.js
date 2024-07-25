@@ -6,8 +6,7 @@ const ContentManagement = () => {
   const [quizCards, setQuizCards] = useState([]);
   const [newQuizCardTitle, setNewQuizCardTitle] = useState('');
   const [newQuizCardNoOfQuestions, setNewQuizCardNoOfQuestions] = useState('');
- const [maxValue, setMaxValue] = useState();
-
+  const [maxValue, setMaxValue] = useState();
   const [questionSections, setQuestionSections] = useState([
     {
       question: '',
@@ -25,9 +24,10 @@ const ContentManagement = () => {
 
   const fetchQuizCards = async () => {
     try {
-      const response = await axios.post('http://localhost:5164/viewCardQuiz',  { eventID: "1001" } );
+      const response = await axios.post('http://localhost:5164/viewCardQuiz', { eventID: "1001" });
       const data = response.data;
       if (data && data.rData && data.rData.items) {
+        console.log('data.rData.items:::',data.rData.items)
         setQuizCards(data.rData.items);
       }
     } catch (error) {
@@ -37,6 +37,8 @@ const ContentManagement = () => {
 
   const handleAddQuizCard = async () => {
     try {
+      const test = quizCards.map(card => card)
+      console.log('test:::',test)
       const maxValue = Math.max(...quizCards.map(card => card.quiz_card_id));
       console.log('maxValue:::',maxValue)
       setMaxValue(maxValue);
@@ -52,24 +54,24 @@ const ContentManagement = () => {
 
       const quizCardData = addQuizCardResponse.data;
       if (quizCardData && quizCardData.rData && quizCardData.rStatus === 0) {
-        console.log('quizCardData::::::',quizCardData)
+        // console.log('quizCardData')
         console.log("Quiz card added successfully");
 
-        const quiz_card_id = quizCardData.rData.quiz_card_id;
+        const quiz_card_id = maxValue;
 
         // Update state with the new quiz card
         setQuizCards([...quizCards, { id: quiz_card_id, title: newQuizCardTitle, no_of_questions: newQuizCardNoOfQuestions }]);
         // Clear input fields
-        setNewQuizCardTitle('');
-        setNewQuizCardNoOfQuestions('');
-        setQuestionSections([{
-          question: '',
-          option1: '',
-          option2: '',
-          option3: '',
-          option4: '',
-          correctAnswer: '',
-        }]);
+        // setNewQuizCardTitle('');
+        // setNewQuizCardNoOfQuestions('');
+        // setQuestionSections([{
+        //   question: '',
+        //   option1: '',
+        //   option2: '',
+        //   option3: '',
+        //   option4: '',
+        //   correctAnswer: '',
+        // }]);
       } else {
         console.log("Failed to add quiz card:", quizCardData);
       }
@@ -122,7 +124,7 @@ const ContentManagement = () => {
       console.log("Response from addQuiz API:", addQuizResponse);
 
       const quizData = addQuizResponse.data;
-      if (quizData && quizData.rData && quizData.rStatus === 0) {
+      if (quizData && quizData.rData && quizData.rMessage === "Successful") {
         console.log("Quiz added successfully");
       } else {
         console.log("Failed to add quiz:", quizData);
