@@ -25,7 +25,7 @@ const QuizManagement = () => {
   const fetchQuizCards = async () => {
     try {
       setLoading(true); // Start loading
-      const response = await axios.post('http://localhost:5164/viewCardQuiz', { eventID: "1001" });
+      const response = await axios.post('http://localhost:5001/viewCardQuiz', { eventID: "1001" });
       const data = response.data;
       if (data && data.rData && data.rData.items) {
         setQuizCards(data.rData.items);
@@ -43,7 +43,7 @@ const QuizManagement = () => {
       const confirmDelete = window.confirm('Are you sure you want to delete this quiz card?');
       if (confirmDelete) {
         setLoading(true); // Start loading
-        const response = await axios.post('http://localhost:5164/deleteCardQuiz', {
+        const response = await axios.post('http://localhost:5001/deleteCardQuiz', {
           eventID: "1001",
           addInfo: { quiz_card_id: quizCardId }
         });
@@ -73,7 +73,7 @@ const QuizManagement = () => {
   //     const confirmDelete = window.confirm('Are you sure you want to delete this quiz card?');
   //     if (confirmDelete) {
   //       setLoading(true); // Start loading
-  //       const response = await axios.post('http://localhost:5164/deleteCardQuiz', {
+  //       const response = await axios.post('http://localhost:5001/deleteCardQuiz', {
   //         eventID: "1001",
   //         addInfo: { quiz_card_id: quizCardId }
   //       });
@@ -96,7 +96,7 @@ const QuizManagement = () => {
   const handleEditQuizCard = async (quizCardId) => {
     setLoading(true); // Start loading
     try {
-      const response = await axios.post('http://localhost:5164/viewQuizByQuizCardId', {
+      const response = await axios.post('http://localhost:5001/viewQuizByQuizCardId', {
         eventID: "1001",
         addInfo: { quiz_card_id: quizCardId }
       });
@@ -141,7 +141,7 @@ const QuizManagement = () => {
   const handleSaveChanges = async () => {
     setLoading(true); // Start loading
     try {
-      const response = await axios.post('http://localhost:5164/updateCardQuiz', {
+      const response = await axios.post('http://localhost:5001/updateCardQuiz', {
         eventID: "1001",
         addInfo: {
           quiz_card_id: selectedQuizCard.id,
@@ -183,7 +183,7 @@ const QuizManagement = () => {
         return;
       }
 
-      const response = await axios.post('http://localhost:5164/updateQuiz', {
+      const response = await axios.post('http://localhost:5001/updateQuiz', {
         eventID: "1001",
         addInfo: {
           quiz_id: quizToUpdate.quiz_id,

@@ -24,10 +24,9 @@ const ContentManagement = () => {
 
   const fetchQuizCards = async () => {
     try {
-      const response = await axios.post('http://localhost:5164/viewCardQuiz', { eventID: "1001" });
+      const response = await axios.post('http://localhost:5001/viewCardQuiz', { eventID: "1001" });
       const data = response.data;
       if (data && data.rData && data.rData.items) {
-        console.log('data.rData.items:::',data.rData.items)
         setQuizCards(data.rData.items);
       }
     } catch (error) {
@@ -36,25 +35,21 @@ const ContentManagement = () => {
   };
 
   useEffect(() => {
-    // This useEffect will run every time quizCards state changes
     if (quizCards.length > 0) {
-      const test = quizCards.map(card => card);
-      console.log('test:::', test);
-  
-      const maxValue = Math.max(...quizCards.map(card => parseInt(card.quiz_card_id))); // Ensure quiz_card_id is parsed to integer
-      console.log('maxValue:::', maxValue);
+      const maxValue = Math.max(...quizCards.map(card => parseInt(card.quiz_card_id)));
       setMaxValue(maxValue);
     }
   }, [quizCards]);
 
   const handleAddQuizCard = async () => {
+    // Validate inputs
+    if (!newQuizCardTitle || !newQuizCardNoOfQuestions) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
     try {
-      // const test = quizCards.map(card => card)
-      // console.log('test:::',test)
-      // const maxValue = Math.max(...quizCards.map(card => card.quiz_card_id));
-      // console.log('maxValue:::',maxValue)
-      // setMaxValue(maxValue);
-      const addQuizCardResponse = await axios.post('http://localhost:5164/insertCardQuiz', {
+      const addQuizCardResponse = await axios.post('http://localhost:5001/insertCardQuiz', {
         eventID: "1001",
         addInfo: {
           title: newQuizCardTitle,
@@ -62,18 +57,13 @@ const ContentManagement = () => {
         }
       });
 
-      console.log("Response from addQuizCard API:", addQuizCardResponse);
-
       const quizCardData = addQuizCardResponse.data;
       if (quizCardData && quizCardData.rData && quizCardData.rStatus === 0) {
-        // console.log('quizCardData')
-        console.log("Quiz card added successfully");
+        alert("Quiz card added successfully");
 
-        const quiz_card_id = maxValue;
+        const quiz_card_id = maxValue + 1; // Corrected: use maxValue + 1 for new ID
 
-        // Update state with the new quiz card
         setQuizCards([...quizCards, { quiz_card_id: quiz_card_id, title: newQuizCardTitle, no_of_questions: newQuizCardNoOfQuestions }]);
-        // Clear input fields
         // setNewQuizCardTitle('');
         // setNewQuizCardNoOfQuestions('');
         // setQuestionSections([{
@@ -118,12 +108,18 @@ const ContentManagement = () => {
   };
 
   const handleAddQuizQuestion = async (index, quiz_card_id) => {
+    // Validate questions
+    const questionData = questionSections[index];
+    if (!questionData.question || !questionData.option1 || !questionData.option2 || !questionData.correctAnswer) {
+      alert("Please fill out the required fields for the question.");
+      return;
+    }
+
     try {
-      const questionData = questionSections[index];
-      const addQuizResponse = await axios.post('http://localhost:5164/insertQuiz', {
+      const addQuizResponse = await axios.post('http://localhost:5001/insertQuiz', {
         eventID: "1001",
         addInfo: {
-          quiz_card_id: maxValue+1,
+          quiz_card_id: quiz_card_id,
           question: questionData.question,
           option1: questionData.option1,
           option2: questionData.option2,
@@ -133,11 +129,9 @@ const ContentManagement = () => {
         }
       });
 
-      console.log("Response from addQuiz API:", addQuizResponse);
-
       const quizData = addQuizResponse.data;
       if (quizData && quizData.rData && quizData.rStatus === 0) {
-        console.log("Quiz added successfully");
+        alert("Question inserted successfully");
       } else {
         console.log("Failed to add quiz:", quizData);
       }
@@ -231,7 +225,7 @@ const ContentManagement = () => {
             {questionSections.length > 1 && (
               <button className="content-management-button" onClick={() => handleDeleteQuestion(index)}>Delete Question</button>
             )}
-            <button className="content-management-button" onClick={() => handleAddQuizQuestion(index, quizCards.length > 0 ? quizCards[quizCards.length - 1].id : null)}>Add Quiz Question</button>
+            <button className="content-management-button" onClick={() => handleAddQuizQuestion(index, quizCards.length > 0 ? quizCards[quizCards.length - 1].quiz_card_id : null)}>Add Quiz Question</button>
           </div>
         ))}
         <button className="content-management-button" onClick={handleAddMoreQuestions}>Add More Questions</button>

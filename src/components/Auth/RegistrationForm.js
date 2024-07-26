@@ -24,7 +24,7 @@ const RegisterForm = () => {
 
     try {
       // Make POST request to register endpoint
-      const response = await axios.post('http://localhost:5164/register', payload);
+      const response = await axios.post('http://localhost:5001/register', payload);
 
       console.log('Registration Response:', response.data);
 

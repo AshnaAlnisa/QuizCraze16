@@ -28,7 +28,7 @@ const ContactUs = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:5164/insertContactUs', payload);
+      const response = await axios.post('http://localhost:5001/insertContactUs', payload);
       let res = response.data.rData.rMessage;
       console.log(response.data, 'api response');
       if (res === "Successful") {

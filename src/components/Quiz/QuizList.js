@@ -19,7 +19,7 @@ const QuizList = () => {
   useEffect(() => {
     const fetchQuizCards = async () => {
       try {
-        const response = await axios.post('http://localhost:5164/viewCardQuiz', { eventID: "1001" });
+        const response = await axios.post('http://localhost:5001/viewCardQuiz', { eventID: "1001" });
         const data = response.data;
         if (data && data.rData && data.rData.items) {
           setQuizzes(data.rData.items);
@@ -51,7 +51,7 @@ const QuizList = () => {
 
   const handleStartQuiz = async (quizCardId) => {
     try {
-      const response = await axios.post(`http://localhost:5164/viewQuizByQuizCardId`, {
+      const response = await axios.post(`http://localhost:5001/viewQuizByQuizCardId`, {
         eventID: "1001",
         addInfo: { quiz_card_id: quizCardId }
       });
@@ -124,7 +124,7 @@ const QuizList = () => {
       const currentUser = JSON.parse(localStorage.getItem('currentUser'));
       const userEmail = currentUser?.email;
 
-      const response = await axios.post('http://localhost:5164/viewUsers', {
+      const response = await axios.post('http://localhost:5001/viewUsers', {
         eventID: "1001",
         addInfo: { email: userEmail }
       });

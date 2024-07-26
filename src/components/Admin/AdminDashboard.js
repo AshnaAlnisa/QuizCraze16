@@ -36,7 +36,7 @@ const AdminDashboard = () => {
       const token = JSON.parse(localStorage.getItem('currentUser')).token;
 
       // Make API call to logout endpoint
-      const response = await axios.post('http://localhost:5164/logout', {
+      const response = await axios.post('http://localhost:5001/logout', {
         eventID: '1001', // Assuming eventID is required by your API
         addInfo: {
           TOKEN: token,

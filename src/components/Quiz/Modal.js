@@ -22,7 +22,7 @@ const Modal = ({ isOpen, onClose, correctAnswers, incorrectAnswers, score, userI
   const handleInsertResult = async () => {
     setIsSubmitting(true);
     try {
-      const response = await axios.post('http://localhost:5164/insertResult', {
+      const response = await axios.post('http://localhost:5001/insertResult', {
         eventID: "1001",
         addInfo: {
           user_id: userId,

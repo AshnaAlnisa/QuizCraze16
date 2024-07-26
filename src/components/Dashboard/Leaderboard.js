@@ -7,7 +7,7 @@ const Leaderboard = () => {
   useEffect(() => {
     const fetchLeaderboardData = async () => {
       try {
-        const response = await axios.post('http://localhost:5164/viewLeaderboard', { eventID: "1001" });
+        const response = await axios.post('http://localhost:5001/viewLeaderboard', { eventID: "1001" });
         if (response.status === 200) {
           const responseData = response.data;
           if (responseData.rData && responseData.rData.items) {

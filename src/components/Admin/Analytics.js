@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import '../../styles/analytics.css';
 import axios from 'axios';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+
+// Register necessary components for Chart.js
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const Analytics = () => {
   const [quizPerformance, setQuizPerformance] = useState([]);
@@ -11,8 +16,8 @@ const Analytics = () => {
     const fetchAnalyticsData = async () => {
       try {
         const [quizPerformanceResponse, userActivityResponse] = await Promise.all([
-          axios.post('http://localhost:5164/viewQuizPerformance', { eventID: "1001"  }),
-          axios.post('http://localhost:5164/viewUserActivity', { eventID: "1001"  })
+          axios.post('http://localhost:5001/viewQuizPerformance', { eventID: "1001" }),
+          axios.post('http://localhost:5001/viewUserActivity', { eventID: "1001" })
         ]);
 
         if (quizPerformanceResponse.data.rData && quizPerformanceResponse.data.rData.items) {
@@ -33,6 +38,29 @@ const Analytics = () => {
     fetchAnalyticsData();
   }, []);
 
+  // Prepare data for charts
+  const quizPerformanceData = {
+    labels: quizPerformance.map(quiz => quiz.quiz_title),
+    datasets: [{
+      label: 'Total plays of the quiz',
+      data: quizPerformance.map(quiz => quiz.times_played),
+      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+      borderColor: 'rgba(75, 192, 192, 1)',
+      borderWidth: 1,
+    }],
+  };
+
+  const userActivityData = {
+    labels: userActivity.map(user => user.username),
+    datasets: [{
+      label: 'Total Quizzes Taken',
+      data: userActivity.map(user => user.total_quizzes_taken),
+      backgroundColor: 'rgba(153, 102, 255, 0.2)',
+      borderColor: 'rgba(153, 102, 255, 1)',
+      borderWidth: 1,
+    }],
+  };
+
   return (
     <div className="analytics-container">
       <h2>Analytics</h2>
@@ -43,46 +71,50 @@ const Analytics = () => {
         <>
           <section>
             <h3>Quiz Performance</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Quiz ID</th>
-                  <th>Title</th>
-                  <th>Total plays of the quiz</th>
-                </tr>
-              </thead>
-              <tbody>
-                {quizPerformance.map((quiz) => (
-                  <tr key={quiz.quiz_id}>
-                    <td>{quiz.quiz_id}</td>
-                    <td>{quiz.quiz_title}</td>
-                    <td>{quiz.times_played}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <Bar data={quizPerformanceData} options={{
+              responsive: true,
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Quiz Performance'
+                },
+                legend: {
+                  position: 'top',
+                },
+              },
+              scales: {
+                x: {
+                  beginAtZero: true,
+                },
+                y: {
+                  beginAtZero: true,
+                },
+              },
+            }} />
           </section>
 
           <section>
             <h3>User Activity</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>User ID</th>
-                  <th>Username</th>
-                  <th>Total Quizzes Taken</th>
-                </tr>
-              </thead>
-              <tbody>
-                {userActivity.map((user) => (
-                  <tr key={user.user_id}>
-                    <td>{user.user_id}</td>
-                    <td>{user.username}</td>
-                    <td>{user.total_quizzes_taken}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <Bar data={userActivityData} options={{
+              responsive: true,
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'User Activity'
+                },
+                legend: {
+                  position: 'top',
+                },
+              },
+              scales: {
+                x: {
+                  beginAtZero: true,
+                },
+                y: {
+                  beginAtZero: true,
+                },
+              },
+            }} />
           </section>
         </>
       )}

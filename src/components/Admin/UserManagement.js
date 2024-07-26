@@ -15,7 +15,7 @@ const UserManagement = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.post('http://localhost:5164/viewUsers', { eventID: "1001" });
+        const response = await axios.post('http://localhost:5001/viewUsers', { eventID: "1001" });
         if (response.status === 200) {
           const responseData = response.data;
           if (responseData.rData && responseData.rData.items) {
@@ -37,7 +37,7 @@ const UserManagement = () => {
 
   const handleDelete = async (user_id) => {
     try {
-      const response = await axios.post('http://localhost:5164/deleteUsers', {
+      const response = await axios.post('http://localhost:5001/deleteUsers', {
         eventID: "1001",
         addInfo: {
           user_id: user_id
@@ -70,7 +70,7 @@ const UserManagement = () => {
 
   const handleViewResults = async (email) => {
     try {
-      const response = await axios.post('http://localhost:5164/viewResult', {
+      const response = await axios.post('http://localhost:5001/viewResult', {
         eventID: "1001",
         addInfo: { email }
       });

@@ -12,7 +12,7 @@ const QuizResults = () => {
         const userEmail = currentUser?.email;
         setUserEmail(userEmail); // Set userEmail state for later use
 
-        const response = await axios.post('http://localhost:5164/viewResult', {
+        const response = await axios.post('http://localhost:5001/viewResult', {
           eventID: "1001",
           addInfo: { email: userEmail }
         });

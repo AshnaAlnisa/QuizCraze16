@@ -20,7 +20,7 @@ const LoginForm = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:5164/myLogin', payload);
+      const response = await axios.post('http://localhost:5001/myLogin', payload);
 
       console.log('API Response:', response); // Log the entire response for debugging
 

@@ -14,7 +14,7 @@ const ContactUsFormDetails = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.post('http://localhost:5164/viewContactUs', { eventID: "1001" });
+      const response = await axios.post('http://localhost:5001/viewContactUs', { eventID: "1001" });
       if (response.status === 200) {
         const responseData = response.data;
         if (responseData.rData && responseData.rData.items) {
@@ -31,7 +31,7 @@ const ContactUsFormDetails = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await axios.post('http://localhost:5164/deleteContactUs', {
+      const response = await axios.post('http://localhost:5001/deleteContactUs', {
         eventID: "1001",
         addInfo: {
           id: id

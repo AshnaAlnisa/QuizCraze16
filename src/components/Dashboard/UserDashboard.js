@@ -36,7 +36,7 @@ const UserDashboardPage = () => {
       const currentUser = JSON.parse(localStorage.getItem('currentUser'));
       const userEmail = currentUser?.email;
 
-      const response = await axios.post('http://localhost:5164/viewUsers', {
+      const response = await axios.post('http://localhost:5001/viewUsers', {
         eventID: "1001",
         addInfo: { email: userEmail }
       });
@@ -62,7 +62,7 @@ const UserDashboardPage = () => {
     try {
       const token = JSON.parse(localStorage.getItem('currentUser')).token;
 
-      const response = await axios.post('http://localhost:5164/logout', {
+      const response = await axios.post('http://localhost:5001/logout', {
         eventID: '1001',
         addInfo: {
           TOKEN: token,
