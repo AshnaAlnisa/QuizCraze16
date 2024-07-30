@@ -7,11 +7,22 @@ const RegisterForm = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState(''); // New state for confirm password
   const [captcha, setCaptcha] = useState('');
+  const [error, setError] = useState(''); // New state for error messages
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return; // Prevent form submission if passwords do not match
+    }
+
+    setError(''); // Clear previous errors
+
     const payload = {
       eventID: "1001",
       addInfo: {
@@ -32,14 +43,7 @@ const RegisterForm = () => {
       if (response.data.rData.rMessage === 'Signup Successful') {
         localStorage.setItem('currentUser', JSON.stringify({ username, email }));
 
-        // const userEmail = response.data.rData.email; // Adjust this according to actual response structure
-        
-        // console.log('User Email:', userEmail);
-
-
-        // localStorage.setItem('currentUser', JSON.stringify({ email: userEmail }));
-
-        navigate('/login'); // Redirect to dashboard after successful registration
+        navigate('/login'); // Redirect to login page after successful registration
       } else {
         alert(response.data.rData.rMessage); // Alert user about registration failure
       }
@@ -86,6 +90,16 @@ const RegisterForm = () => {
         />
       </div>
       <div className="form-group">
+        <label htmlFor="confirmPassword">Confirm Password</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+        />
+      </div>
+      <div className="form-group">
         <label htmlFor="captcha">Captcha</label>
         <input
           type="text"
@@ -96,9 +110,10 @@ const RegisterForm = () => {
         />
         <p>Enter "1234" as the captcha</p> {/* Simulated captcha for demo purposes */}
       </div>
-      <button  type="submit">Register</button>
-      <p>Already have an account?? Login here..</p>
-      <button type='submit' onClick={navigateLogin}>Login</button>
+      {error && <p className="error">{error}</p>} {/* Display error message */}
+      <button type="submit">Register</button>
+      <p>Already have an account? Login here..</p>
+      <button type="submit" onClick={navigateLogin}>Login</button>
     </form>
   );
 };

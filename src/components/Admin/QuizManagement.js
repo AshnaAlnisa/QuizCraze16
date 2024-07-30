@@ -164,6 +164,7 @@ const QuizManagement = () => {
         setSelectedQuizCard(null);
         setQuizCardTitle('');
         setQuizCardNoOfQuestions('');
+        alert('Quiz card updated successfully.');
       } else {
         console.error('Failed to update quiz card:', data);
       }
@@ -199,6 +200,7 @@ const QuizManagement = () => {
 
       const data = response.data;
       if (data && data.rStatus === 0) {
+        alert('Quiz updated successfully.');
         // Update state or perform necessary actions
       } else {
         console.error(`Failed to update quiz with ID ${quizId}:`, data);
